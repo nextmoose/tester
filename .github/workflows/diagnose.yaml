@@ -9,7 +9,11 @@ jobs:
   branch:
     runs-on: ubuntu-latest
     steps:
-    - run: echo ${GITHUB_HEAD_REF}
+    - run: echo ${GITHUB_REF}
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_SHA}
   repository:
     runs-on: ubuntu-latest
     steps:
