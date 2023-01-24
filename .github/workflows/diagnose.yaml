@@ -1,8 +1,20 @@
 name: "Test"
 on:
-  pull_request:
+  push:
 jobs:
-  diganose:
+  environment:
+    runs-on: ubuntu-latest
+    steps:
+    - run: env
+  branch:
+    runs-on: ubuntu-latest
+    steps:
+    -run: echo ${GITHUB_HEAD_REF}
+  repository:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_REPOSITORY}
+  nixos:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -10,5 +22,4 @@ jobs:
       with:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
-    - run: env
 
