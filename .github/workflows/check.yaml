@@ -1,0 +1,29 @@
+name: "Test"
+on:
+  push:
+jobs:
+  environment:
+    runs-on: ubuntu-latest
+    steps:
+    - run: env
+  branch:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_REF}
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_SHA}
+  repository:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_REPOSITORY}
+  nixos:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.TOKEN }}
+
