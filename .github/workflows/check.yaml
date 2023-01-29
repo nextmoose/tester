@@ -15,7 +15,3 @@ jobs:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
     - run: cd $( mktemp --directory ) && git init && nix flake init && sed -e "s#\${IMPLEMENTATION}##" -e "s#\${TEST}##" -e "wflake.nix"
-  versions:
-    runs-on: ubuntu-latest
-    steps:
-    - run: cat flake.lock | jq --raw-output '.root as $root | .nodes | to_entries | map ( select ( .key != $root ) ) | map ( if .value.original.type == "github" and .value.original.owner and .value.original.type and .value.original.rev then { success : true , value : .key } else { success : false , value : .key } end ) | map ( select ( .success == false ) ) | length | if . == 0 then true else false end'
