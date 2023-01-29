@@ -1,0 +1,245 @@
+{
+  "nodes": {
+    "argue": {
+      "inputs": {
+        "flake-utils": "flake-utils_2"
+      },
+      "locked": {
+        "lastModified": 1672616731,
+        "narHash": "sha256-LAU8esex3HkcWBfEIUHDTBG0dkncFIxuhoH6vetXn8E=",
+        "owner": "nextmoose",
+        "repo": "argue",
+        "rev": "d133a09c4a9b587bf469d0d73feec7fbdd37f0b5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nextmoose",
+        "repo": "argue",
+        "type": "github"
+      }
+    },
+    "bash-variable": {
+      "inputs": {
+        "flake-utils": "flake-utils_3"
+      },
+      "locked": {
+        "lastModified": 1672616733,
+        "narHash": "sha256-YWh9gmH3zQZMn/+ARdMno7ouLC0J5kvs5IquaTzyIuQ=",
+        "owner": "nextmoose",
+        "repo": "bash-variable",
+        "rev": "5a3a945160707505250d5633272a3b3b40d6b5f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nextmoose",
+        "repo": "bash-variable",
+        "type": "github"
+      }
+    },
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      }
+    },
+    "flake-utils_2": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_3": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_4": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_5": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      }
+    },
+    "flake-utils_6": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_7": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1672328916,
+        "narHash": "sha256-YM2ibdjpbA5HdmHfaXDFJAvxa8Nguw6aUEBZkrUEAqU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "57eac89459226f3ec743ffa6bbbc1042f5836843",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "57eac89459226f3ec743ffa6bbbc1042f5836843",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs",
+        "utils": "utils"
+      }
+    },
+    "strip": {
+      "inputs": {
+        "flake-utils": "flake-utils_5"
+      },
+      "locked": {
+        "lastModified": 1673827069,
+        "narHash": "sha256-GlAk2MqUGAz2EG5TSzrxbDcIRG06IYptXqqiSB6DUOo=",
+        "owner": "nextmoose",
+        "repo": "strip",
+        "rev": "ef519ee397f1b94ccc56c9b8adccfce3c8645388",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nextmoose",
+        "repo": "strip",
+        "type": "github"
+      }
+    },
+    "try": {
+      "inputs": {
+        "flake-utils": "flake-utils_6"
+      },
+      "locked": {
+        "lastModified": 1672616742,
+        "narHash": "sha256-I0eTKU2rJcLPE+qntaeIZvrvqHS9YNnsj5vjfpYDGuk=",
+        "owner": "nextmoose",
+        "repo": "try",
+        "rev": "16dd8e9bd209e885eb0b151039bd551b428f2ae6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nextmoose",
+        "repo": "try",
+        "type": "github"
+      }
+    },
+    "utils": {
+      "inputs": {
+        "argue": "argue",
+        "bash-variable": "bash-variable",
+        "flake-utils": "flake-utils_4",
+        "strip": "strip",
+        "try": "try",
+        "visit": "visit"
+      },
+      "locked": {
+        "narHash": "sha256-ZE/OyFRHE0O7QCw2XaQ2DnoT9eB80rDjmefCVzCzsRE=",
+        "path": "/home/emory/projects/MGWfXwul",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/emory/projects/MGWfXwul",
+        "type": "path"
+      }
+    },
+    "visit": {
+      "inputs": {
+        "flake-utils": "flake-utils_7"
+      },
+      "locked": {
+        "lastModified": 1672616745,
+        "narHash": "sha256-mCIumzd6hOBD/yVl192elKCJqecP01L+pexDEllzdKg=",
+        "owner": "nextmoose",
+        "repo": "visit",
+        "rev": "4cbf1f845486ee44a07ea667ac68cd382d3c3e47",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nextmoose",
+        "repo": "visit",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

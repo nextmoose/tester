@@ -1,0 +1,41 @@
+name: "Push"
+on:
+  push:
+jobs:
+  nixos:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.TOKEN }}
+    - runs: cd $( mktemp --directory ) && git clone github:nextmoose/tester.git && nix develop --command check --temporality true
+  environment:
+    runs-on: ubuntu-latest
+    steps:
+    - run: env
+  branch:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_REF}
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_SHA}
+  repository:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${GITHUB_REPOSITORY}
+  nixos:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.TOKEN }}
+  version:
+    runs-on: ubuntu-latest
+    steps:
+    - run: cat flake.lock | jq --raw-output '.root as $root | .nodes | to_entries | map ( select ( .key != $root ) ) | map ( if .value.original.type == "github" and .value.original.owner and .value.original.type and .value.original.rev then { success : true , value : .key } else { success : false , value : .key } end ) | map ( select ( .success == false ) ) | length | if . == 0 then true else false end'
