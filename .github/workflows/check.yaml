@@ -3,7 +3,7 @@ on:
   push:
 jobs:
   pwd:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
     - run: pwd
   checks:
