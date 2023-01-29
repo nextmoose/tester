@@ -5,9 +5,17 @@ jobs:
   precheck:
     runs-on: ubuntu-latest
     steps:
+      - uses: cachix/install-nix-action@v17
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.TOKEN }}
+    - run: cd $( mktemp --directory ) && git init && nix flake init && sed -e "s#\${IMPLEMENTATION}#github:nextmoose/tester#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix" && cat flake.nix && git commit --all --allow-empty-message --message "" && cat flake.nix && nix develop --command check
+  check:
+    runs-on: ubuntu-latest
+    steps:
     - uses: actions/checkout@v3
     - uses: cachix/install-nix-action@v17
       with:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
-    - run: cd $( mktemp --directory ) && git init && nix flake init && sed -e "s#\${IMPLEMENTATION}#github:nextmoose/tester-test#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix"
+    - run: cd $( mktemp --directory ) && git init && nix flake init && sed -e "s#\${IMPLEMENTATION}#/home/runner/work/tester/tester#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix" && nix develop --command check
