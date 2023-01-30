@@ -43,7 +43,7 @@
                                           pkgs.writeShellScriptBin
                                             "check"
                                             ''
-                                              if [ "${ result }" == "" ]
+                                              if [ "${ result }" == "${ _utils.bash-variable "@" }" ]
 					      then
 					        exit 0
 					      else
