@@ -1,0 +1,13 @@
+name: "Test"
+on:
+  push:
+jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.TOKEN }}
+    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#github:nextmoose/tester#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix" /home/runner/work/tester/tester/original.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && cat flake.nix && echo FIND ME && nix develop --command check ""
