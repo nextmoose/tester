@@ -9,4 +9,4 @@ jobs:
       with:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
-    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && echo 1 && nix flake init && echo 2 && sed -e "s#\${IMPLEMENTATION}#github:nextmoose/tester#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix" && git commit --all --allow-empty-message --message "" && cat flake.nix && nix develop --command check ""
+    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && echo 1 && echo nix flake init && echo 2 && sed -e "s#\${IMPLEMENTATION}#github:nextmoose/tester#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix" && git commit --all --allow-empty-message --message "" && cat flake.nix && nix develop --command check ""
