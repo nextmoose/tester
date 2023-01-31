@@ -47,6 +47,7 @@
                                               then
                                                 exit 0
                                               else
+					        ${ pkgs.coreutils }/bin/echo '${ structure }' &&
                                                 exit 64
                                               fi
                                             ''
