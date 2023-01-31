@@ -23,6 +23,26 @@
               pkgs.inetutils
 	      pkgs.jq
               pkgs.moreutils
+	      (
+	        pkgs.writeShellScriptBin
+		  "manual-test"
+		  ''
+		    IMPLEMENTATION=$( ${ pkgs.coreutils }/bin/pwd ) &&
+		    TESTER=${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] } &&
+		    TEST=${ builtins.concatStringsSep "" [ "$" "{" "1" "}" ] } &&
+		    ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message "" &&
+		    ${ pkgs.git }/bin/git push origin HEAD && 
+		    cd $( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
+		    ${ pkgs.nix }/bin/nix flake init &&
+		    ${ pkgs.gnused }/bin/sed \
+		      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#" \
+		      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#" \
+		      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "TESTER" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "TESTER" "}" ] }#" \
+		      -e "wflake.nix" ${ builtins.concatStringsSep "" [ "$" "{" "TESTER" "}" ] }/original.nix \
+		      flake.nix &&
+		    ${ pkgs.nix }/bin/nix develop --command check
+		  ''
+	      )
               (
                 pkgs.writeShellScriptBin
                   "cleanup"
