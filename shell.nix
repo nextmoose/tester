@@ -29,7 +29,7 @@
 		  ''
 		    IMPLEMENTATION=$( ${ pkgs.coreutils }/bin/pwd ) &&
 		    TESTER=${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] } &&
-		    TEST=${ builtins.concatStringsSep "" [ "$" "{" "1" ":/home/emory/projects/Ruo71RvT" "}" ] } &&
+		    TEST=${ builtins.concatStringsSep "" [ "$" "{" "1" "}" ] } &&
 		    ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message "" &&
 		    ${ pkgs.git }/bin/git push origin HEAD && 
 		    cd $( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
