@@ -47,7 +47,7 @@
                                               then
                                                 exit 0
                                               else
-					        ${ pkgs.coreutils }/bin/echo '${ result }' &&
+					        ${ pkgs.coreutils }/bin/echo 'BEFORE${ result }AFTER' &&
                                                 exit 64
                                               fi
                                             ''
