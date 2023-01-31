@@ -43,20 +43,7 @@
                                           pkgs.writeShellScriptBin
                                             "check"
                                             ''
-                                              if [ ${ _utils.bash-variable "1" } == "precheck" ] && [ _utils.bash-variable "#" == 1 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^scratch/.*$ ]]
-                                              then
-                                                ${ pkgs.coreutils }/bin/echo PRECHECK HAPPY / SAD
-                                              else if [ ${ _utils.bash-variable "1" } == "precheck" ] && [ _utils.bash-variable "#" == 2 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^implementation/.*$ ]]
-                                              then
-                                                ${ pkgs.coreutils }/bin/echo PRECHECK INTEGRATION
-                                              else if [ ${ _utils.bash-variable "1" } == "check" ] && [ _utils.bash-variable "#" == 1 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^scratch/.*$ ]]
-                                              then
-                                                ${ pkgs.coreutils }/bin/echo CHECK HAPPY
-                                              else if [ ${ _utils.bash-variable "1" } == "check" ] && [ _utils.bash-variable "#" == 2 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^implementation/.*$ ]]
-                                              then
-                                                ${ pkgs.coreutils }/bin/echo CHECK INTEGRATION
-                                              fi &&
-                                              if [ "${ result }" == "${ _utils.bash-variable "2" }" ]
+                                              if [ "${ result }" == "${ _utils.bash-variable "1" }" ]
                                               then
                                                 exit 0
                                               else
