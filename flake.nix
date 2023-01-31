@@ -43,6 +43,7 @@
                                           pkgs.writeShellScriptBin
                                             "check"
                                             ''
+					      ${ pkgs.coreutils }/bin/echo HI &&
                                               if [ "${ result }" == "${ _utils.bash-variable "1" }" ]
                                               then
                                                 exit 0
