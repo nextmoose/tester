@@ -32,8 +32,8 @@
                                                 let
                                                   tester =
                                                     uuid : observer : success : value :
-						      if builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) == { success = success ; value = value ; } then ""
-						      else builtins.trace ( ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ).value ) ( builtins.toString uuid ) ;
+                                                      if builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) == { success = success ; value = value ; } then ""
+                                                      else builtins.trace ( ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ).value ) ( builtins.toString uuid ) ;
                                                   in track.reduced tester ;
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
@@ -43,30 +43,30 @@
                                           pkgs.writeShellScriptBin
                                             "check"
                                             ''
-					      if [ ${ _utils.bash-variable "1" } == "precheck" ] && [ _utils.bash-variable "#" == 1 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^scratch/.*$ ]]
-					      then
-					        ${ pkgs.coreutils }/bin/echo PRECHECK HAPPY / SAD
-					      else if [ ${ _utils.bash-variable "1" } == "precheck" ] && [ _utils.bash-variable "#" == 2 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^implementation/.*$ ]]
-					      then
-					        ${ pkgs.coreutils }/bin/echo PRECHECK INTEGRATION
-					      else if [ ${ _utils.bash-variable "1" } == "check" ] && [ _utils.bash-variable "#" == 1 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^scratch/.*$ ]]
-					      then
-					        ${ pkgs.coreutils }/bin/echo CHECK HAPPY
-					      else if [ ${ _utils.bash-variable "1" } == "check" ] && [ _utils.bash-variable "#" == 2 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^implementation/.*$ ]]
-					      then
-					        ${ pkgs.coreutils }/bin/echo CHECK INTEGRATION
-					      fi &&
+                                              if [ ${ _utils.bash-variable "1" } == "precheck" ] && [ _utils.bash-variable "#" == 1 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^scratch/.*$ ]]
+                                              then
+                                                ${ pkgs.coreutils }/bin/echo PRECHECK HAPPY / SAD
+                                              else if [ ${ _utils.bash-variable "1" } == "precheck" ] && [ _utils.bash-variable "#" == 2 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^implementation/.*$ ]]
+                                              then
+                                                ${ pkgs.coreutils }/bin/echo PRECHECK INTEGRATION
+                                              else if [ ${ _utils.bash-variable "1" } == "check" ] && [ _utils.bash-variable "#" == 1 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^scratch/.*$ ]]
+                                              then
+                                                ${ pkgs.coreutils }/bin/echo CHECK HAPPY
+                                              else if [ ${ _utils.bash-variable "1" } == "check" ] && [ _utils.bash-variable "#" == 2 ] && [[ ${ _utils.bash-variable "GITHUB_REF_NAME" } =~ ^implementation/.*$ ]]
+                                              then
+                                                ${ pkgs.coreutils }/bin/echo CHECK INTEGRATION
+                                              fi &&
                                               if [ "${ result }" == "${ _utils.bash-variable "2" }" ]
-					      then
-					        exit 0
-					      else
-					        exit 64
-					      fi
+                                              then
+                                                exit 0
+                                              else
+                                                exit 64
+                                              fi
                                             ''
                                     )
                                   ] ;
                               } ;
-			} ;
+                        } ;
                   }
           ) ;
   }

@@ -18,7 +18,7 @@ jobs:
       with:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
-    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#github:nextmoose/tester#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix" /home/runner/work/tester/tester/original.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && cat flake.nix && echo FIND ME && nix develop --command check ""
+    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#github:nextmoose/tester#" -e "s#\${TEST}#github:nextmoose/tester-test#" -e "wflake.nix" /home/runner/work/tester/tester/original.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && cat flake.nix && echo FIND ME && nix develop --command check "" ||  /nix/store/3kf001c1cjhvw0jqzd5qd9nzqrghbs6v-check/bin/check
   check:
     needs: precheck
     runs-on: ubuntu-latest
