@@ -43,12 +43,13 @@
                                           pkgs.writeShellScriptBin
                                             "check"
                                             ''
-					      ${ pkgs.coreutils }/bin/echo HI &&
                                               if [ "${ result }" == "${ _utils.bash-variable "1" }" ]
                                               then
+					        ${ pkgs.coreutils }/bin/echo PASSED &&
                                                 exit 0
                                               else
-					        ${ pkgs.coreutils }/bin/echo 'BEFORE${ result }AFTER' &&
+					        ${ pkgs.coreutils }/bin/echo FAILED &&
+					        ${ pkgs.coreutils }/bin/echo FAILURE=${ result }= &&
                                                 exit 64
                                               fi
                                             ''
