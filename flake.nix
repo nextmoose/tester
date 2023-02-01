@@ -25,6 +25,13 @@
                                   [
                                     (
                                       let
+				        path-to-string =
+					  let
+					    int = track : builtins.concatStringsSep "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
+					    list = track : builtins.concatStringsSep "" track.reduced ;
+					    string = track : builtins.concatStringsSep "" [ "{" track.reduced "}" ] ;
+					    undefined = track : builtins.throw "4cecdf24-d6ba-4866-abbb-c9bc7984739b" ;
+					    in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; }
                                         result =
                                           let
                                             lambda =
@@ -33,7 +40,7 @@
                                                   tester =
                                                     observer : success : value :
                                                       if builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) == { success = success ; value = value ; } then ""
-                                                      else builtins.concatStringsSep "/" ( builtins.map builtins.toString track.path ) ;
+                                                      else path-to-string track.path
                                                   in track.reduced tester ;
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
