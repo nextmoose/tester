@@ -31,7 +31,7 @@
 					    list = track : builtins.concatStringsSep "" track.reduced ;
 					    string = track : builtins.concatStringsSep "" [ "{" track.reduced "}" ] ;
 					    undefined = track : builtins.throw "4cecdf24-d6ba-4866-abbb-c9bc7984739b" ;
-					    in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; }
+					    in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; } ;
                                         result =
                                           let
                                             lambda =
