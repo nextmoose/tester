@@ -37,7 +37,7 @@
                                                   in track.reduced tester ;
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
-                                            undefined = track : builtins.throw "XXX=60574bba-c6ea-40c5-8510-2f9ae6ae1130=${ builtins.toString track.reduced }=" ;
+                                            undefined = track : builtins.toString track.reduced ;
                                             in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.getAttr system test.lib ) ;
                                         in
                                           pkgs.writeShellScriptBin
