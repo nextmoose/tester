@@ -31,9 +31,9 @@
                                               track :
                                                 let
                                                   tester =
-                                                    uuid : observer : success : value :
+                                                    observer : success : value :
                                                       if builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) == { success = success ; value = value ; } then ""
-                                                      else builtins.trace ( ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ).value ) ( builtins.toString uuid ) ;
+                                                      else builtins.concatStringsSep "/" ( builtins.map builtins.toString track.path ) ;
                                                   in track.reduced tester ;
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
