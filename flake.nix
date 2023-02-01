@@ -45,11 +45,11 @@
                                             ''
                                               if [ "${ result }" == "${ _utils.bash-variable "1" }" ]
                                               then
-					        ${ pkgs.coreutils }/bin/echo PASSED &&
+                                                ${ pkgs.coreutils }/bin/echo PASSED &&
                                                 exit 0
                                               else
-					        ${ pkgs.coreutils }/bin/echo FAILED &&
-					        ${ pkgs.coreutils }/bin/echo FAILURE=${ result }= &&
+                                                ${ pkgs.coreutils }/bin/echo FAILED &&
+                                                ${ pkgs.coreutils }/bin/echo FAILURE=${ result }= &&
                                                 exit 64
                                               fi
                                             ''
