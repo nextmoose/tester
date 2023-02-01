@@ -31,7 +31,9 @@
 		    TESTER=${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] } &&
 		    TEST=${ builtins.concatStringsSep "" [ "$" "{" "1" "}" ] } &&
 		    ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message "" &&
+		    ${ pkgs.git }/bin/git -C ${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] } commit --all --allow-empty --allow-empty-message --message "" &&
 		    ${ pkgs.git }/bin/git push origin HEAD && 
+		    ${ pkgs.git }/bin/git -C ${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] } push origin HEAD && 
 		    cd $( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
 		    ${ pkgs.nix }/bin/nix flake init &&
 		    ${ pkgs.gnused }/bin/sed \
