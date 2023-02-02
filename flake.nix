@@ -65,7 +65,7 @@
                                                                     let
                                                                       eval = equality ( builtins.getAttr index expected ) ( builtins.getAttr index observed ) ;
                                                                       in { success = eval.success ; value = builtins.concatStringsSep "" [ "{" index "}" eval.value ] ; } ;
-                                                                in builtins.map mapper indices ;
+                                                                      in builtins.map mapper indices ;
                                                             failures = builtins.filter ( eval : ! eval.success ) eval ;
                                                             indices = builtins.attrNames observed ;
                                                             in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep " , " ( builtins.map ( eval : eval.value ) failures ) ; } ;
@@ -90,7 +90,7 @@
                                                   tester =
                                                     observer : success : value :
                                                       let
-                                                        equals = equality ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ) { success = success ; value = value ; } ;
+                                                        equals = builtins.trace ( builtins.concatStringsSep "; " ( builtins.attrNames ( observer ( builtins.getAttr system implementation.lib ) ) ) ) ( equality ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ) { success = success ; value = value ; } ) ;
                                                         in
                                                           if equals.success then ""
                                                           else builtins.trace equals.value ( path-to-string track.path ) ;
