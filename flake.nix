@@ -25,63 +25,63 @@
                                   [
                                     (
                                       let
-				        equality =
-					  let
-					    visitors =
-					      let
-					        simple = observed : expected : { success = observed == expected ; value = "" ; } ;
-					        in
-						  {
-					            bool = simple ;
-					            int = simple ;
-						    lambda = observed : expected : { success = false ; value = "lambda" ; } ;
-						    list =
-						      observed : expected :
-						        if builtins.length observed != builtins.length expected then { success = false ; value = "list length" ; }
-							else
-							  let
-							    eval =
-							      let
-							        mapper =
-								  index :
-								    let
-								      eval = equality ( builtins.elemAt observed index ) ( builtins.elemAt expected index ) ;
-								      in { success = eval.success ; value = builtins.concatStringsSep "" [ "[" ( builtins.toString index ) "]" eval.value ] ; } ;
-							        in builtins.map mapper indices ;
-							    failures = builtins.filter ( eval : ! eval.success ) eval ;
-							    indices = builtins.genList ( i : i ) ( builtins.length observed ) ;
-							    in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep "; " failures ; } ;
-						    null = simple ;
-						    path = simple ;
-						    set =
-						      observed : expected :
-						        if builtins.attrNames observed != builtins.attrNames expected then { success = false ; value = "set attrNames" ; }
-							else
-							  let
-							    eval =
-							      let
-							        mapper =
-								  index :
-								    let
-								      eval = equality ( builtins.getAttr index expected ) ( builtins.getAttr index observed ) ;
-								      in { success = eval.success ; value = builtins.concatStringsSep "" [ "{" index "}" eval.value ] ; } ;
-								in builtins.map mapper indices ;
-						            failures = builtins.filter ( eval : ! eval.success ) eval ;
-							    indices = builtins.attrNames observed ;
-							    in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep "; " failures ; } ;
-						    string = simple ;
-					      } ;
-					    in
-					      observed : expected :
-					        if builtins.typeOf observed != builtins.typeOf expected then { success = false ; value = "type mismatch" ; }
-						else builtins.getAttr ( builtins.typeOf observed ) visitors observed expected ;
-				        path-to-string =
-					  let
-					    int = track : builtins.concatStringsSep "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
-					    list = track : builtins.concatStringsSep "" track.reduced ;
-					    string = track : builtins.concatStringsSep "" [ "{" track.reduced "}" ] ;
-					    undefined = track : builtins.throw "4cecdf24-d6ba-4866-abbb-c9bc7984739b" ;
-					    in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; } ;
+                                        equality =
+                                          let
+                                            visitors =
+                                              let
+                                                simple = observed : expected : { success = observed == expected ; value = "" ; } ;
+                                                in
+                                                  {
+                                                    bool = simple ;
+                                                    int = simple ;
+                                                    lambda = observed : expected : { success = false ; value = "lambda" ; } ;
+                                                    list =
+                                                      observed : expected :
+                                                        if builtins.length observed != builtins.length expected then { success = false ; value = "list length" ; }
+                                                        else
+                                                          let
+                                                            eval =
+                                                              let
+                                                                mapper =
+                                                                  index :
+                                                                    let
+                                                                      eval = equality ( builtins.elemAt observed index ) ( builtins.elemAt expected index ) ;
+                                                                      in { success = eval.success ; value = builtins.concatStringsSep "" [ "[" ( builtins.toString index ) "]" eval.value ] ; } ;
+                                                                in builtins.map mapper indices ;
+                                                            failures = builtins.filter ( eval : ! eval.success ) eval ;
+                                                            indices = builtins.genList ( i : i ) ( builtins.length observed ) ;
+                                                            in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep "; " failures ; } ;
+                                                    null = simple ;
+                                                    path = simple ;
+                                                    set =
+                                                      observed : expected :
+                                                        if builtins.attrNames observed != builtins.attrNames expected then { success = false ; value = "set attrNames" ; }
+                                                        else
+                                                          let
+                                                            eval =
+                                                              let
+                                                                mapper =
+                                                                  index :
+                                                                    let
+                                                                      eval = equality ( builtins.getAttr index expected ) ( builtins.getAttr index observed ) ;
+                                                                      in { success = eval.success ; value = builtins.concatStringsSep "" [ "{" index "}" eval.value ] ; } ;
+                                                                in builtins.map mapper indices ;
+                                                            failures = builtins.filter ( eval : ! eval.success ) eval ;
+                                                            indices = builtins.attrNames observed ;
+                                                            in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep "; " failures ; } ;
+                                                    string = simple ;
+                                              } ;
+                                            in
+                                              observed : expected :
+                                                if builtins.typeOf observed != builtins.typeOf expected then { success = false ; value = "type mismatch" ; }
+                                                else builtins.getAttr ( builtins.typeOf observed ) visitors observed expected ;
+                                        path-to-string =
+                                          let
+                                            int = track : builtins.concatStringsSep "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
+                                            list = track : builtins.concatStringsSep "" track.reduced ;
+                                            string = track : builtins.concatStringsSep "" [ "{" track.reduced "}" ] ;
+                                            undefined = track : builtins.throw "4cecdf24-d6ba-4866-abbb-c9bc7984739b" ;
+                                            in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; } ;
                                         result =
                                           let
                                             lambda =
@@ -89,9 +89,9 @@
                                                 let
                                                   tester =
                                                     observer : success : value :
-						      let
-						        equals = equality ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ) { success = success ; value = value ; } ;
-							in
+                                                      let
+                                                        equals = equality ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ) { success = success ; value = value ; } ;
+                                                        in
                                                           if equals.success then ""
                                                           else builtins.trace equals.value ( path-to-string track.path ) ;
                                                   in track.reduced tester ;
