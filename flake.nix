@@ -55,7 +55,7 @@
                                                     path = simple ;
                                                     set =
                                                       observed : expected :
-                                                        if builtins.attrNames observed != builtins.attrNames expected then { success = false ; value = builtins.concatStringsSep " -\n\n" [ "set attrNames" ( builtins.concatStringsSep "," ( builtins.attrNames observed ) ) ( builtins.concatStringsSep "," ( builtins.attrNames expected ) ) ] ; }
+                                                        if builtins.attrNames observed != builtins.attrNames expected then { success = false ; value = builtins.concatStringsSep " -\n\n" [ "set attrNames" "observed" ( builtins.concatStringsSep "," ( builtins.attrNames observed ) ) "expected" ( builtins.concatStringsSep "," ( builtins.attrNames expected ) ) ] ; }
                                                         else
                                                           let
                                                             eval =
