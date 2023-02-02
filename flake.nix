@@ -91,7 +91,7 @@
                                                     observer : success : value :
                                                       let
 						        expected = { success = success ; value = value ; } ;
-                                                        equals = observed == expected ;
+                                                        equals = builtins.trace ( builtins.concatStringsSep " , " ( builtins.attrNames observed ) ) ( observed == expected ) ;
 							observed = builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ;
                                                         in
                                                           if equals then ""
