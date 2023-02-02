@@ -90,7 +90,7 @@
                                                   tester =
                                                     observer : success : value :
 						      let
-						        equals = equality ( observer ( builtins.getAttr system implementation.lib ) ) { success = success ; value = value ; } ;
+						        equals = equality ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ) { success = success ; value = value ; } ;
 							in
                                                           if equals.success then ""
                                                           else builtins.trace equals.value ( path-to-string track.path ) ;
