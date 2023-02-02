@@ -95,7 +95,7 @@
 							observed = builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ;
                                                         in
                                                           if equals then ""
-                                                          else builtins.trace equals.value ( path-to-string track.path ) ;
+                                                          else path-to-string track.path ;
                                                   in track.reduced tester ;
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
