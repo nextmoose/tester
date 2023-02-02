@@ -68,7 +68,7 @@
                                                                 in builtins.map mapper indices ;
                                                             failures = builtins.filter ( eval : ! eval.success ) eval ;
                                                             indices = builtins.attrNames observed ;
-                                                            in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep " , " ( builtins.map ( eval : eval.value ) failure ) ; } ;
+                                                            in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep " , " ( builtins.map ( eval : eval.value ) failures ) ; } ;
                                                     string = simple ;
                                               } ;
                                             in
