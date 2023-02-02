@@ -50,7 +50,7 @@
 							        in builtins.map mapper indices ;
 							    failures = builtins.filter ( eval : ! eval.success ) eval ;
 							    indices = builtins.genList ( i : i ) ( builtins.length observed ) ;
-							    in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep "; " failures ; }
+							    in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep "; " failures ; } ;
 						    null = simple ;
 						    path = simple ;
 						    set =
