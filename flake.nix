@@ -64,7 +64,7 @@
 								  index :
 								    let
 								      eval = equality ( builtins.getAttr index expected ) ( builtins.getAttr index observed ) ;
-								      in { success = eval.success ; value = builtins.concatStringsSep "" [ "{" index "}" eval.value ] ;
+								      in { success = eval.success ; value = builtins.concatStringsSep "" [ "{" index "}" eval.value ] ; } ;
 								in builtins.map mapper indices ;
 						            failures = builtins.filter ( eval : ! eval.success ) eval ;
 							    indices = builtins.attrNames observed ;
