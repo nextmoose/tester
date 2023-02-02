@@ -90,7 +90,9 @@
                                                   tester =
                                                     observer : success : value :
                                                       let
-                                                        equals = builtins.trace ( builtins.concatStringsSep "; " ( builtins.attrNames ( observer ( builtins.getAttr system implementation.lib ) ) ) ) ( equality ( builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ) { success = success ; value = value ; } ) ;
+						        expected = { success = success ; value = value ; } ;
+                                                        equals = observed == expected ;
+							observed = builtins.tryEval ( observer ( builtins.getAttr system implementation.lib ) ) ;
                                                         in
                                                           if equals.success then ""
                                                           else builtins.trace equals.value ( path-to-string track.path ) ;
