@@ -68,7 +68,7 @@
                                                                 in builtins.map mapper indices ;
                                                             failures = builtins.filter ( eval : ! eval.success ) eval ;
                                                             indices = builtins.attrNames observed ;
-                                                            in { success = builtins.length failures == 0 ; value = "set problem" ; } ;
+                                                            in { success = builtins.length failures == 0 ; value = "set problem ${ builtins.typeOf failures }" ; } ;
                                                     string = simple ;
                                               } ;
                                             in
