@@ -1,0 +1,31 @@
+name: "Test"
+on:
+  push:
+jobs:
+  env:
+    runs-on: ubuntu-latest
+    steps:
+    - run: env	
+  pwd:
+    runs-on: ubuntu-latest
+    steps:
+    - run: pwd
+  precheck:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.TOKEN }}
+    - run: true # cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#${IMPLEMENTATION}#${IMPLEMENTATION}#" -e "s#${TEST}#${TEST}#" -e "wflake.nix" /home/runner/work/tester/tester/.github/workflows/original.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && cat flake.nix && nix develop --command check ""
+  check:
+    needs: precheck
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.TOKEN }}
+    - run: true # cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#${IMPLEMENTATION}#${IMPLEMENTATION}#" -e "s#${TEST}#${GITHUB_WORKSPACE}#" -e "wflake.nix" /home/runner/work/tester/tester/.github/workflows/original.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && cat flake.nix && nix develop --command check ""

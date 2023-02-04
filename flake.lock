@@ -212,13 +212,18 @@
         "visit": "visit"
       },
       "locked": {
-        "narHash": "sha256-ZE/OyFRHE0O7QCw2XaQ2DnoT9eB80rDjmefCVzCzsRE=",
-        "path": "/home/emory/projects/MGWfXwul",
-        "type": "path"
+        "lastModified": 1670174859,
+        "narHash": "sha256-pAbBiJ6F9/2iJn2dnqHDwjuFGRWJEuCsH0mbAtYw3Hg=",
+        "owner": "nextmoose",
+        "repo": "utils",
+        "rev": "3e5a503a5a639aa6e67e8716c2a4c5dbcd1df60a",
+        "type": "github"
       },
       "original": {
-        "path": "/home/emory/projects/MGWfXwul",
-        "type": "path"
+        "owner": "nextmoose",
+        "repo": "utils",
+        "rev": "3e5a503a5a639aa6e67e8716c2a4c5dbcd1df60a",
+        "type": "github"
       }
     },
     "visit": {
