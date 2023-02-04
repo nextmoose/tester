@@ -1,4 +1,4 @@
-{ pkgs ? import ( fetchTarball "https://github.com/NixOS/nixpkgs/archive/bf972dc380f36a3bf83db052380e55f0eaa7dcb6.tar.gz" ) {} } :
+{ pkgs ? import ( fetchTarball "https://github.com/NixOS/nixpkgs/archive/bf972dc380f36a3bf83db052380e55f0eaa7dcb6.tar.gz" ) {} , implementation , test } :
   pkgs.mkShell
     {
       buildInputs =
@@ -18,12 +18,79 @@
               pkgs.chromium
               pkgs.coreutils
               pkgs.emacs
-	      pkgs.gh
-	      pkgs.github-runner
+              pkgs.gh
+              pkgs.github-runner
               pkgs.inetutils
-	      pkgs.jq
+              pkgs.jq
               pkgs.moreutils
               (
+                pkgs.writeShellScriptBin
+                  "write-implementation"
+                  ''
+                    IMPLEMENTATION=${ builtins.concatStringsSep "" [ "$" "{" "1" "}" ] } &&
+                    TEST=${ builtins.concatStringsSep "" [ "$" "{" "2" "}" ] } &&
+                    ${ pkgs.coreutils }/bin/mkdir --parents .github/workflows &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/original.nix } > .github/workflows/original.nix &&
+                    ${ pkgs.gnused }/bin/sed \
+                      -e "s_s#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }_s#\\\\\${ builtins.concatStringsSep "" [ "$" "{" "+" "IMPLEMENTATION" "}" ] }_" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "+" "IMPLEMENTATION" "}" ] }#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#" \
+                      -e "s_s#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }_s#\\\\\${ builtins.concatStringsSep "" [ "$" "{" "+" "TEST" "}" ] }_" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "+" "TEST" "}" ] }#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#" \
+                      -e "w.github/workflows/check.yaml" \
+                      ${ ./workflows/implementation.yaml } &&
+                    ${ pkgs.coreutils }/bin/touch README.md &&
+                    ${ pkgs.git }/bin/git add .github/workflows/original.nix .github/workflows/check.yaml &&
+                    ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message ""
+                  ''
+              )
+              (
+                pkgs.writeShellScriptBin
+                  "write-test"
+                  ''
+                    IMPLEMENTATION=${ builtins.concatStringsSep "" [ "$" "{" "1" "}" ] } &&
+                    TEST=${ builtins.concatStringsSep "" [ "$" "{" "2" "}" ] } &&
+                    ${ pkgs.coreutils }/bin/mkdir --parents .github/workflows &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/original.nix } > .github/workflows/original.nix &&
+                    ${ pkgs.gnused }/bin/sed \
+                      -e "s_s#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }_s#\\\\\${ builtins.concatStringsSep "" [ "$" "{" "+" "IMPLEMENTATION" "}" ] }_" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "+" "IMPLEMENTATION" "}" ] }#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#" \
+                      -e "s_s#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }_s#\\\\\${ builtins.concatStringsSep "" [ "$" "{" "+" "TEST" "}" ] }_" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "+" "TEST" "}" ] }#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#" \
+                      -e "w.github/workflows/check.yaml" \
+                      ${ ./workflows/test.yaml } &&
+                    ${ pkgs.coreutils }/bin/touch README.md &&
+                    ${ pkgs.git }/bin/git add .github/workflows/original.nix .github/workflows/check.yaml &&
+                    ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message ""
+                  ''
+              )
+              (
+                pkgs.writeShellScriptBin
+                  "version"
+                  ''
+                    ${ pkgs.coreutils }/bin/cat flake.lock | ${ pkgs.jq }/bin/jq --raw-output '.root as $root | .nodes | to_entries | map ( select ( .key != $root ) ) | map ( if .value.original.type == "github" then { success : true } else { success : false , value : .key } end ) | map ( select ( .success == false ) ) | map ( .value )'
+                  ''
+              )
+              (
+                pkgs.writeShellScriptBin
+                  "manual-test"
+                  ''
+                    TESTER=${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] } &&
+                    cd $( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
+                    ${ pkgs.nix }/bin/nix flake init &&
+                    ${ pkgs.gnused }/bin/sed \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "IMPLEMENTATION" "}" ] }#" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "TEST" "}" ] }#" \
+                      -e "s#\${ builtins.concatStringsSep "" [ "$" "{" "TESTER" "}" ] }#${ builtins.concatStringsSep "" [ "$" "{" "TESTER" "}" ] }#" \
+                      -e "wflake.nix" \
+                      ${ ./workflows/original.nix } &&
+                    ${ pkgs.nix }/bin/nix develop --command check
+                  ''
+              )
+                            (
                 pkgs.writeShellScriptBin
                   "cleanup"
                   ''
@@ -227,6 +294,8 @@
           export TRY_HOME=/home/emory/projects/0gG3HgHu &&
           export UTILS_HOME=/home/emory/projects/MGWfXwul &&
           export VISIT_HOME=/home/emory/projects/wHpYNJk8 &&
+          export IMPLEMENTATION=${ implementation } &&
+          export TEST=${ test } &&
           ${ pkgs.coreutils }/bin/echo STRUCTURE FLAKE DEVELOPMENT ENVIRONMENT
         '' ;
     }
