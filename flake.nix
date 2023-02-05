@@ -25,7 +25,7 @@
                                   [
                                     (
                                       let
-				        _test = builtins.trace "YES" ( builtins.getAttr system test.lib ) ;
+				        _test = builtins.getAttr system test.lib ;
                                         path-to-string =
                                           let
                                             int = track : builtins.concatStringsSep "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
@@ -51,7 +51,7 @@
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
                                             undefined = track : builtins.toString track.reduced ;
-                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( _test utils ) ;
+                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.trace ( builtins.typeOf _test ) ( _test utils ) ) ;
                                         in
                                           pkgs.writeShellScriptBin
                                             "check"
