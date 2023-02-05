@@ -56,7 +56,7 @@
                                           pkgs.writeShellScriptBin
                                             "check"
                                             ''
-                                              if [ "${ result }" == "${ _utils.bash-variable "1" }" ]
+                                              if [ "${ builtins.trace ( builtins.typeOf result ) result }" == "${ _utils.bash-variable "1" }" ]
                                               then
                                                 ${ pkgs.coreutils }/bin/echo PASSED &&
                                                 exit 0
