@@ -100,7 +100,7 @@
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
                                             undefined = track : builtins.toString track.reduced ;
-                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.getAttr system test.lib ) ;
+                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.getAttr system test.lib utils ) ;
                                         in
                                           pkgs.writeShellScriptBin
                                             "check"
