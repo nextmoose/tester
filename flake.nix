@@ -25,7 +25,7 @@
                                   [
                                     (
                                       let
-				        _test = builtins.getAttr system test.lib ;
+				        _test = builtins.trace "YES" ( builtins.getAttr system test.lib ) ;
                                         path-to-string =
                                           let
                                             int = track : builtins.concatStringsSep "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
