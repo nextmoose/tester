@@ -99,8 +99,8 @@
                                                   in track.reduced tester ;
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
-                                            undefined = track : builtins.trace "YES" ( builtins.throw "5f6ca4e4-a5b6-4039-af5e-c9519959dc5e" ) ;
-                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.getAttr system test.lib ) ;
+                                            undefined = track : builtins.throw "5f6ca4e4-a5b6-4039-af5e-c9519959dc5e" ;
+                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.trace ( builtins.typeOf ( builtins.getAttr system test.lib ) ) ( builtins.getAttr system test.lib ) ) ;
                                         in
                                           pkgs.writeShellScriptBin
                                             "check"
