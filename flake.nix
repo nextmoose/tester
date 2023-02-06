@@ -25,56 +25,7 @@
                                   [
                                     (
                                       let
-                                        equality =
-                                          let
-                                            visitors =
-                                              let
-                                                simple = observed : expected : { success = observed == expected ; value = "" ; } ;
-                                                in
-                                                  {
-                                                    bool = simple ;
-                                                    int = simple ;
-                                                    lambda = observed : expected : { success = false ; value = "lambda" ; } ;
-                                                    list =
-                                                      observed : expected :
-                                                        if builtins.length observed != builtins.length expected then { success = false ; value = "list length" ; }
-                                                        else
-                                                          let
-                                                            eval =
-                                                              let
-                                                                mapper =
-                                                                  index :
-                                                                    let
-                                                                      eval = equality ( builtins.elemAt observed index ) ( builtins.elemAt expected index ) ;
-                                                                      in { success = eval.success ; value = builtins.concatStringsSep "" [ "[" ( builtins.toString index ) "]" eval.value ] ; } ;
-                                                                in builtins.map mapper indices ;
-                                                            failures = builtins.filter ( eval : ! eval.success ) eval ;
-                                                            indices = builtins.genList ( i : i ) ( builtins.length observed ) ;
-                                                            in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep "; " failures ; } ;
-                                                    null = simple ;
-                                                    path = simple ;
-                                                    set =
-                                                      observed : expected :
-                                                        if builtins.attrNames observed != builtins.attrNames expected then { success = false ; value = builtins.concatStringsSep " -\n\n" [ "set attrNames" "observed" ( builtins.concatStringsSep "," ( builtins.attrNames observed ) ) "expected" ( builtins.concatStringsSep "," ( builtins.attrNames expected ) ) ] ; }
-                                                        else
-                                                          let
-                                                            eval =
-                                                              let
-                                                                mapper =
-                                                                  index :
-                                                                    let
-                                                                      eval = equality ( builtins.getAttr index expected ) ( builtins.getAttr index observed ) ;
-                                                                      in { success = eval.success ; value = builtins.concatStringsSep "" [ "{" index "}" eval.value ] ; } ;
-                                                                      in builtins.map mapper indices ;
-                                                            failures = builtins.filter ( eval : ! eval.success ) eval ;
-                                                            indices = builtins.attrNames observed ;
-                                                            in { success = builtins.length failures == 0 ; value = builtins.concatStringsSep " , " ( builtins.map ( eval : eval.value ) failures ) ; } ;
-                                                    string = simple ;
-                                              } ;
-                                            in
-                                              observed : expected :
-                                                if builtins.typeOf observed != builtins.typeOf expected then { success = false ; value = "type mismatch" ; }
-                                                else builtins.getAttr ( builtins.typeOf observed ) visitors observed expected ;
+				        _test = builtins.getAttr system test.lib ;
                                         path-to-string =
                                           let
                                             int = track : builtins.concatStringsSep "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
@@ -100,12 +51,12 @@
                                             list = track : builtins.concatStringsSep "" track.reduced ;
                                             set = track : builtins.concatStringsSep "" ( builtins.attrValues track.reduced ) ;
                                             undefined = track : builtins.toString track.reduced ;
-                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.getAttr system test.lib ) ;
+                                            in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } ( builtins.trace ( builtins.typeOf _test ) ( _test utils ) ) ;
                                         in
                                           pkgs.writeShellScriptBin
                                             "check"
                                             ''
-                                              if [ "${ result }" == "${ _utils.bash-variable "1" }" ]
+                                              if [ "${ builtins.trace ( builtins.typeOf result ) result }" == "${ _utils.bash-variable "1" }" ]
                                               then
                                                 ${ pkgs.coreutils }/bin/echo PASSED &&
                                                 exit 0
