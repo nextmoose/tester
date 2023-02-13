@@ -36,9 +36,10 @@
 					observed = builtins.tryEval ( observer _implementation ) ;
 					in observed == expected ;
 				    in track.reduced test ;
+			       list = track : builtins.all ( x : x ) track.reduced ;
 			       set = track : builtins.all ( x : x ) ( builtins.attrValues track.reduced ) ;
 			       undefined = track : builtins.throw "7f74b417-f07a-4d6a-8257-fdeb47ee89ae" ;
-			       in _utils.visit { lambda = lambda ; set = set ; undefined = undefined ; } _test ;
+			       in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } _test ;
 			  devShell = { devShell = pkgs.mkShell { buildInputs = [ ( pkgs.writeShellScriptBin "check" "" ) ] ; } ; } ;
 			  error = builtins.throw "21ad4f91-60d5-4603-a721-2b0037abc004" ;
 			  in if check then devShell else error ;
