@@ -20,14 +20,14 @@
                 pkgs.writeShellScriptBin
                   "write-happy"
                   ''
-                    source .github/workflows.url.env &&
+                    source .github/workflows/urls.env &&
                     TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
                     if [ "${ dollar "TYPE" }" == "implementation" ]
                     then
                       ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "w${ dollar "TEMP" }" ${ ./yaml/happy-implementation.yaml }
                     elif [ "${ dollar "TYPE" }" == "test" ]
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "w${ dollar "TEMP" }" ${ ./yaml/happy-test.yaml }
                     then
+                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "w${ dollar "TEMP" }" ${ ./yaml/happy-test.yaml }
                     elif [ "${ dollar "TYPE" }" == "tester" ]
                     then
                       ${ pkgs.coreutils }/bin/cp ${ ./yaml/happy-tester.yaml } ${ dollar "TEMP" }
@@ -84,14 +84,15 @@
                   "write-integration"
                   ''
                     source .github/workflows/problem.env &&
-                    source .github/workflows/url.env &&
+                    source .github/workflows/urls.env &&
                     TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
                     if [ "${ dollar "TYPE" }" == "implementation" ]
                     then
                       ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-implementation.yaml }
                     elif [ "${ dollar "TYPE" }" == "test" ]
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.yaml }
                     then
+                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHE
+CK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.yaml }
                     elif [ "${ dollar "TYPE" }" == "tester" ]
                     then
                       ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-tester.yaml }
@@ -111,18 +112,18 @@
                     REV=${ dollar "1" }
                     EOF
                     ) &&
-                    source .github/workflows/url.env &&
+                    source .github/workflows/urls.env &&
                     source .github/workflows/problems.env &&
                     TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
                     if [ "${ dollar "TYPE" }" == "implementation" ]
                     then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-implementation.yaml }
+                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "s#${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-implementation.yaml }
                     elif [ "${ dollar "TYPE" }" == "test" ]
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-test.yaml }
                     then
+                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "s#${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-test.yaml }
                     elif [ "${ dollar "TYPE" }" == "tester" ]
                     then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-tester.yaml }
+                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "s#${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-tester.yaml }
                     else
                       ${ pkgs.coreutils }/bin/echo The TYPE value must either be implementation or test or tester &&
                       exit 64
@@ -133,6 +134,9 @@
               in
                 [
                   write-init
+                  write-happy
+                  write-sad
+                  write-integration
                   pkgs.chromium
                   pkgs.coreutils
                   pkgs.emacs
@@ -143,38 +147,38 @@
                   pkgs.mktemp
                   pkgs.yq
                   pkgs.moreutils
-		  (
-		    pkgs.writeShellScriptBin
-		      "test-local-check"
-		      ''
-		        export IMPLEMENTATION=${ dollar "1" } &&
-			export TEST=${ dollar "2" } &&
-			export TESTER=${ dollar "3" } &&
-			export GITHUB_WORKSPACE="$( ${ pkgs.coreutils }/bin/pwd )" &&
-			cd $( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
-			${ pkgs.git }/bin/git init &&
-			${ pkgs.git }/bin/git config user.name "No Name" &&
-			${ pkgs.git }/bin/git config user.email "no@one" &&
-			${ pkgs.nix }/bin/nix flake init &&
-			${ pkgs.gnused }/bin/sed \
-			  -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" \
-			  -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" \
-			  -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" \
-			  -e "wflake.nix" \
-			  ${ ./yaml/flake.nix } &&
-			${ pkgs.git }/bin/git add flake.nix &&
-			${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message "" &&
-			if ${ pkgs.nix }/bin/nix develop --command check ""
-			then
-			  ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.nix }/bin/nix-collect-garbage" | /usr/bin/at now + 60min &&
-			  ${ pkgs.coreutils }/bin/echo CONGRATULATIONS ... IT WORKED
-			else
-			  ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.nix }/bin/nix-collect-garbage" | /usr/bin/at now + 10min &&
-			  ${ pkgs.coreutils }/bin/echo CONDOLENCES ... IT DID NOT WORK &&
-			  ${ pkgs.coreutils }/bin/pwd
-			fi
-		      ''
-		  )
+                  (
+                    pkgs.writeShellScriptBin
+                      "test-local-check"
+                      ''
+                        export IMPLEMENTATION=${ dollar "1" } &&
+                        export TEST=${ dollar "2" } &&
+                        export TESTER=${ dollar "3" } &&
+                        export GITHUB_WORKSPACE="$( ${ pkgs.coreutils }/bin/pwd )" &&
+                        cd $( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
+                        ${ pkgs.git }/bin/git init &&
+                        ${ pkgs.git }/bin/git config user.name "No Name" &&
+                        ${ pkgs.git }/bin/git config user.email "no@one" &&
+                        ${ pkgs.nix }/bin/nix flake init &&
+                        ${ pkgs.gnused }/bin/sed \
+                          -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" \
+                          -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" \
+                          -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" \
+                          -e "wflake.nix" \
+                          ${ ./yaml/flake.nix } &&
+                        ${ pkgs.git }/bin/git add flake.nix &&
+                        ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message "" &&
+                        if ${ pkgs.nix }/bin/nix develop --command check ""
+                        then
+                          ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.nix }/bin/nix-collect-garbage" | /usr/bin/at now + 60min &&
+                          ${ pkgs.coreutils }/bin/echo CONGRATULATIONS ... IT WORKED
+                        else
+                          ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.nix }/bin/nix-collect-garbage" | /usr/bin/at now + 10min &&
+                          ${ pkgs.coreutils }/bin/echo CONDOLENCES ... IT DID NOT WORK &&
+                          ${ pkgs.coreutils }/bin/pwd
+                        fi
+                      ''
+                  )
                   (
                     pkgs.writeShellScriptBin
                       "version"

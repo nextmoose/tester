@@ -10,7 +10,7 @@ jobs:
       with:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
-    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#${IMPLEMENTATION}#" -e "s#\${TEST}#${TEST}#" -e "s#\${TESTER}#github:nextmoose/tester#" -e "wflake.nix" /home/runner/work/tester/tester/.github/workflows/flake.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && nix develop --command check ""
+    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#${IMPLEMENTATION}#" -e "s#\${TEST}#${TEST}#" -e "s#\${TESTER}#github:nextmoose/tester#" -e "wflake.nix" ${GITHUB_WORKSPACE}/.github/workflows/flake.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && nix develop --command check ""
   check:
     needs: pre-check
     runs-on: ubuntu-latest
@@ -20,7 +20,7 @@ jobs:
       with:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
-    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#${GITHUB_WORKSPACE}#" -e "s#\${TEST}#${TEST}#" -e "s#\${TESTER}#github:nextmoose/tester#" -e "wflake.nix" /home/runner/work/tester/tester/.github/workflows/flake.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && nix develop --command check ""
+    - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#${GITHUB_WORKSPACE}#" -e "s#\${TEST}#${TEST}#" -e "s#\${TESTER}#github:nextmoose/tester#" -e "wflake.nix" ${GITHUB_WORKSPACE}/.github/workflows/flake.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && nix develop --command check ""
   post-check:
     needs: check
     runs-on: ubuntu-latest
