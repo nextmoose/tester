@@ -44,8 +44,8 @@
 			  error = builtins.throw "21ad4f91-60d5-4603-a721-2b0037abc004" ;
 			  stringify =
 			    let
-			      int = track : builtins.toString track.reduced ;
-			      list = track : builtins.concatStringsSep "" track.reduced ;
+			      int = track : builtins.concatStringsSep "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
+			      list = track : builtins.concatStringsSep "" [ "{" ( builtins.concatStringsSep "" track.reduced  ) "}" ] ;
 			      string = track : track.reduced ;
 			      undefined = track : builtins.throw "abccc82c-b517-4476-bb5a-2d9682b425a0" ;
 			      in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; } ;
