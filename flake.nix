@@ -49,7 +49,7 @@
 			      string = track : track.reduced ;
 			      undefined = track : builtins.throw "abccc82c-b517-4476-bb5a-2d9682b425a0" ;
 			      in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; } ;
-			  in if check then devShell else error ;
+			  in devShell ;
 		  }
 	  ) ;
   }
