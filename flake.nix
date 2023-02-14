@@ -35,13 +35,20 @@
 				        expected = { success = success ; value = value ; } ;
 					observed = builtins.tryEval ( observer _implementation ) ;
 					in observed == expected ;
-				    in track.reduced test ;
-			       list = track : builtins.all ( x : x ) track.reduced ;
-			       set = track : builtins.all ( x : x ) ( builtins.attrValues track.reduced ) ;
+				    in if track.reduced test then "" else stringify track.path ;
+			       list = track : builtins.concatStringsSep "," ( builtins.filter ( x : x != "" ) track.reduced ) ;
+			       set = track : builtins.concatStringsSep "," ( builtins.filter ( x : x != "" ) ( builtins.attrValues track.reduced ) ) ;
 			       undefined = track : builtins.throw "7f74b417-f07a-4d6a-8257-fdeb47ee89ae" ;
 			       in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } _test ;
-			  devShell = { devShell = pkgs.mkShell { buildInputs = [ ( pkgs.writeShellScriptBin "check" "" ) ] ; } ; } ;
+			  devShell = { devShell = pkgs.mkShell { buildInputs = [ ( pkgs.writeShellScriptBin "check" "${ pkgs.coreutils }/bin/echo ${ check }" ) ] ; } ; } ;
 			  error = builtins.throw "21ad4f91-60d5-4603-a721-2b0037abc004" ;
+			  stringify =
+			    let
+			      int = track : builtins.toString track.reduced ;
+			      list = track : builtins.concatStringsSep "" track.reduced ;
+			      string = track : track.reduced ;
+			      undefined = track : builtins.throw "abccc82c-b517-4476-bb5a-2d9682b425a0" ;
+			      in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; } ;
 			  in if check then devShell else error ;
 		  }
 	  ) ;
