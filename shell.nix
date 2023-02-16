@@ -83,7 +83,7 @@
                 pkgs.writeShellScriptBin
                   "write-integration"
                   ''
-                    source .github/workflows/problem.env &&
+                    source .github/workflows/problems.env &&
                     source .github/workflows/urls.env &&
                     TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
                     if [ "${ dollar "TYPE" }" == "implementation" ]
@@ -146,6 +146,7 @@ CK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.
                   pkgs.jq
                   pkgs.mktemp
                   pkgs.yq
+		  pkgs.cowsay
                   pkgs.moreutils
                   (
                     pkgs.writeShellScriptBin
