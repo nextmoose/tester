@@ -76,6 +76,7 @@
                       ${ pkgs.coreutils }/bin/echo The 3rd argument must be either implementation or test or tester &&
                       exit 64
                     fi &&
+		    ${ pkgs.coreutils }/bin/cat > .github/workflows/versions.nix <<EOF
                     ${ pkgs.coreutils }/bin/cat ${ ./yaml/flake.nix } > .github/workflows/flake.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/urls.env .github/workflows/check.yaml .github/workflows/flake.nix
                   '' ;
