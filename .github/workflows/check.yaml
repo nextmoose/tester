@@ -25,4 +25,5 @@ jobs:
     needs: pre-check
     runs-on: ubuntu-latest
     steps:
-    - run: cat flake.lock | jq --raw-output '.root as $root | .nodes | to_entries | map ( select ( .key != $root ) ) | map ( { key : .key , value : .value.original } ) '
+    - uses: actions/checkout@v3
+    - run: cat flake.lock | jq --raw-output '.root as $root | .nodes | to_entries | map ( select ( .key != $root ) ) '
