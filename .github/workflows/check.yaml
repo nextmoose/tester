@@ -2,6 +2,10 @@ name: "Test"
 on:
   push:
 jobs:
+  true:
+    runs-on: ubuntu:latest
+    steps:
+    - "run: true"
   pre-check:
     runs-on: ubuntu-latest
     steps:
