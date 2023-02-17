@@ -134,6 +134,20 @@ CK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.
                   '' ;
               in
                 [
+		  (
+		    pkgs.writeShellScriptBin
+		      "write-workflow-init"
+		      ''
+		        MODE=${ dollar "1" } &&
+		        if [ -d .github ] && ! ${ pkgs.git }/bin/rm --recursive .github
+			then
+			  ${ pkgs.coreutils }/bin/rm --recursive --force .github
+			fi &&
+			${ pkgs.coreutils }/bin/mkdir .github &&
+			${ pkgs.coreutils }/bin/mkdir .github/workflows &&
+			${ pkgs.coreutils }/bin/mkdir .github/workflows/check
+		      ''
+		  )
                   write-init
                   write-happy
                   write-sad
