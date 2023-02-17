@@ -138,20 +138,36 @@ CK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.
 		    pkgs.writeShellScriptBin
 		      "write-workflow-init"
 		      ''
-		        MODE=${ dollar "1" } &&
+		        IMPLEMENTATION=${ dollar "1" } &&
+			TEST=${ dollar "2" } &&
+			TESTER=${ dollar "3" } &&
+			TYPE=${ dollar "4" } &&
 		        if [ -d .github ] && ! ${ pkgs.git }/bin/rm --recursive .github
 			then
 			  ${ pkgs.coreutils }/bin/rm --recursive --force .github
 			fi &&
 			${ pkgs.coreutils }/bin/mkdir .github &&
 			${ pkgs.coreutils }/bin/mkdir .github/workflows &&
-			${ pkgs.coreutils }/bin/mkdir .github/workflows/check
+			${ pkgs.coreutils }/bin/mkdir .github/workflows/pre-check &&
+			${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/pre-check/flake.nix" ${ ./workflows/check.nix } &&
+			${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+			if [ "${ dollar "TYPE" }" == "implementation" ]
+			then
+			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "GITHUB_WORKSPACE" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/pre-check/flake.nix" ${ ./workflows/check.nix }
+			elif [ "${ dollar "TYPE" }" == "test" ]
+			then
+			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "GITHUB_WORKSPACE" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/pre-check/flake.nix" ${ ./workflows/check.nix }
+			elif [ "${ dollar "TYPE" }" == "tester" ]
+			then
+			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "GITHUB_WORKSPACE" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "GITHUB_WORKSPACE" }#" -e "w.github/workflows/pre-check/flake.nix" ${ ./workflows/check.nix }
+			else
+			  ${ pkgs.coreutils }/bin/echo Unknown Type ${ dollar "TYPE" } &&
+			  exit 64
+			fi &&
+			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{{ secrets.token }}" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\" \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##"
+			${ pkgs.coreutils }/bin/true
 		      ''
 		  )
-                  write-init
-                  write-happy
-                  write-sad
-                  write-integration
                   pkgs.chromium
                   pkgs.coreutils
                   pkgs.emacs
@@ -163,45 +179,6 @@ CK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.
                   pkgs.yq
                   pkgs.cowsay
                   pkgs.moreutils
-                  (
-                    pkgs.writeShellScriptBin
-                      "test-local-check"
-                      ''
-                        export IMPLEMENTATION=${ dollar "1" } &&
-                        export TEST=${ dollar "2" } &&
-                        export TESTER=${ dollar "3" } &&
-                        export GITHUB_WORKSPACE="$( ${ pkgs.coreutils }/bin/pwd )" &&
-                        cd $( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
-                        ${ pkgs.git }/bin/git init &&
-                        ${ pkgs.git }/bin/git config user.name "No Name" &&
-                        ${ pkgs.git }/bin/git config user.email "no@one" &&
-                        ${ pkgs.nix }/bin/nix flake init &&
-                        ${ pkgs.gnused }/bin/sed \
-                          -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" \
-                          -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" \
-                          -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" \
-                          -e "wflake.nix" \
-                          ${ ./yaml/flake.nix } &&
-                        ${ pkgs.git }/bin/git add flake.nix &&
-                        ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message "" &&
-                        if ${ pkgs.nix }/bin/nix develop --command check ""
-                        then
-                          ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.nix }/bin/nix-collect-garbage" | /usr/bin/at now + 60min &&
-                          ${ pkgs.coreutils }/bin/echo CONGRATULATIONS ... IT WORKED
-                        else
-                          ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.nix }/bin/nix-collect-garbage" | /usr/bin/at now + 10min &&
-                          ${ pkgs.coreutils }/bin/echo CONDOLENCES ... IT DID NOT WORK &&
-                          ${ pkgs.coreutils }/bin/pwd
-                        fi
-                      ''
-                  )
-                  (
-                    pkgs.writeShellScriptBin
-                      "version"
-                      ''
-                        ${ pkgs.coreutils }/bin/cat flake.lock | ${ pkgs.jq }/bin/jq --raw-output '.root as $root | .nodes | to_entries | map ( select ( .key != $root ) ) | map ( if .value.original.type == "github" then { success : true } else { success : false , value : .key } end ) | map ( select ( .success == false ) ) | map ( .value )'
-                      ''
-                  )
                   (
                     pkgs.writeShellScriptBin
                       "cleanup"
