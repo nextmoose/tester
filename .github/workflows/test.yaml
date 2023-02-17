@@ -2,6 +2,10 @@ name: test
 on:
   push: 
 jobs:
+  env:
+    runs-on: ubuntu-latest
+    steps:
+      -run : env
   pre-check:
     runs-on: ubuntu-latest
     steps:
