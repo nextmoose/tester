@@ -5,7 +5,7 @@ jobs:
   env:
     runs-on: ubuntu-latest
     steps:
-      -run : env
+      - run : env
   pre-check:
     runs-on: ubuntu-latest
     steps:
