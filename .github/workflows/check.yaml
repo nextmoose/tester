@@ -21,9 +21,3 @@ jobs:
         extra_nix_config: |
           access-tokens = github.com=${{ secrets.TOKEN }}
     - run: cd $( mktemp --directory ) && git init && git config user.name "No User" && git config user.email "noone@nothing" && nix flake init && sed -e "s#\${IMPLEMENTATION}#${GITHUB_WORKSPACE}#" -e "s#\${TEST}#github:nextmoose/tester-test?rev=6430b1a9071bc1b948294c200d3da49dee85cb48#" -e "s#\${TESTER}#github:nextmoose/tester#" -e "wflake.nix" ${GITHUB_WORKSPACE}/.github/workflows/flake.nix && git add flake.nix && git commit --all --allow-empty-message --message "" && nix develop --command check "${CHECK}"
-  versions:
-    needs: pre-check
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - run: cat flake.lock | jq --raw-output '.root as $root | .nodes | to_entries | map ( select ( .key != $root ) ) | map ( \{ key : .key , value : .value \} ) '
