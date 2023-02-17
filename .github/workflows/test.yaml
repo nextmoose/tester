@@ -12,5 +12,5 @@ jobs:
       - uses: actions/checkout@v3
       - uses: cachix/install-nix-action@v17
         with:
-          extra_nix_configs: access-tokens = github.com=${{{ secrets.token }}}
+          extra_nix_configs: access-tokens = github.com=${{ secrets.token }}
       - run: cd .github/workflows/check && nix develop --command check "" ""
