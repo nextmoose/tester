@@ -60,6 +60,12 @@
 			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
 		      ''
 		  )
+		  (
+		    pkgs.writeShellScriptBin
+		      "write-workflow-happy"
+		      ''
+		      ''
+		  )
                   pkgs.chromium
                   pkgs.coreutils
                   pkgs.emacs
