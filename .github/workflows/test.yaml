@@ -3,9 +3,9 @@ on:
   push: 
 jobs:
   versions:
-  runs-on: ubuntu-latest
-  steps:
-    - run: if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output "$( cat versions.txt )" --exit-status; fi
+    runs-on: ubuntu-latest
+    steps:
+      - run: if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output "$( cat versions.txt )" --exit-status; fi
   pre-check:
     runs-on: ubuntu-latest
     steps:
