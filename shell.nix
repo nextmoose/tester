@@ -58,11 +58,10 @@
 			  exit 64
 			fi &&
 			${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check"  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
+			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check"  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
 			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
 			${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
-			${ pkgs.git }/bin/git push origin HEAD
+			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
 		      ''
 		  )
 		  (
@@ -70,12 +69,13 @@
 		      "write-workflow-happy"
 		      ''
 		        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-		        ${ pkgs.coreutils }/bin/cat .github/workflows/check.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { jobs : ( .jobs + { "pre-check" : ( { "run-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-actions@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check" } ] } ) , check : ( { "run-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-actions@v17" } , { run : "cd .github/workflows/check && nix develop --command check" } ] } ) } ) }' > ${ dollar "TEMP" } &&
-			${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/checks.yaml &&
+		        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { "pre-check" : ( { "runs-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" } &&
+			${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
+			${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
+			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
 			${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" } &&
-			${ pkgs.git }/bin/git add .github/workflows/checks.yaml &&
-			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
-			${ pkgs.git }/bin/git push origin HEAD
+			${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
 		      ''
 		  )
                   pkgs.chromium
