@@ -2,9 +2,9 @@
     inputs =
       {
         flake-utils.url = "github:numtide/flake-utils?rev=5aed5285a952e0b949eb3ba02c12fa4fcfef535f" ;
-	implementation.url = builtins.getEnv "GITHUB_WORKSPACE" ;
+	implementation.url = "/home/runner/work/tester/tester" ;
 	test.url = "github:nextmoose/tester-test" ;
-	tester.url = builtins.getEnv "GITHUB_WORKSPACE" ;
+	tester.url = "/home/runner/work/tester/tester" ;
       } ;
     outputs =
       { flake-utils , implementation , self , test , tester } :
