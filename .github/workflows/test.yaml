@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output "$( cat versions.txt )" --exit-status; fi
+      - run: if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output "$( cat .github/workflows/versions.txt )" --exit-status; fi
   pre-check:
     runs-on: ubuntu-latest
     steps:
