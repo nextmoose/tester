@@ -16,132 +16,17 @@
           in
             let
               dollar = expression : builtins.concatStringsSep "" [ "$" "{" expression "}" ] ;
-              write-happy =
-                pkgs.writeShellScriptBin
-                  "write-happy"
-                  ''
-                    source .github/workflows/urls.env &&
-                    TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-                    if [ "${ dollar "TYPE" }" == "implementation" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "w${ dollar "TEMP" }" ${ ./yaml/happy-implementation.yaml }
-                    elif [ "${ dollar "TYPE" }" == "test" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "w${ dollar "TEMP" }" ${ ./yaml/happy-test.yaml }
-                    elif [ "${ dollar "TYPE" }" == "tester" ]
-                    then
-                      ${ pkgs.coreutils }/bin/cp ${ ./yaml/happy-tester.yaml } ${ dollar "TEMP" }
-                    else
-                      ${ pkgs.coreutils }/bin/echo The TYPE value must either be implementation or test or tester &&
-                      exit 64
-                    fi &&
-                    ${ pkgs.coreutils }/bin/cp ${ dollar "TEMP" } .github/workflows/check.yaml &&
-                    ${ pkgs.git }/bin/git add .github/workflows/check.yaml &&
-                    ${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
-                  '' ;
-              write-init =
-                pkgs.writeShellScriptBin
-                  "write-init"
-                  ''
-                    ${ pkgs.coreutils }/bin/mkdir --parents .github/workflows &&
-                    ( ${ pkgs.coreutils }/bin/cat > .github/workflows/urls.env <<EOF
-                    IMPLEMENTATION=${ dollar "1" }
-                    TEST=${ dollar "2" }
-                    TYPE=${ dollar "3" }
-                    EOF
-                    ) &&
-                    source .github/workflows/urls.env &&
-                    if [ "${ dollar "TYPE" }" == "implementation" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed \
-                        -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" \
-                        -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" \
-                        -e "w.github/workflows/check.yaml" \
-                        ${ ./yaml/init-implementation.yaml }
-                    elif [ "${ dollar "TYPE" }" == "test" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed \
-                        -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" \
-                        -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" \
-                        -e "w.github/workflows/check.yaml" \
-                        ${ ./yaml/init-test.yaml }
-                    elif [ "${ dollar "TYPE" }" == "tester" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed \
-                        -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" \
-                        -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" \
-                        -e "w.github/workflows/check.yaml" \
-                        ${ ./yaml/init-tester.yaml }
-                    else
-                      ${ pkgs.coreutils }/bin/echo The 3rd argument must be either implementation or test or tester &&
-                      exit 64
-                    fi &&
-                    ${ pkgs.coreutils }/bin/cat > .github/workflows/versions.nix <<EOF
-                    ${ pkgs.coreutils }/bin/cat ${ ./yaml/flake.nix } > .github/workflows/flake.nix &&
-                    ${ pkgs.git }/bin/git add .github/workflows/urls.env .github/workflows/check.yaml .github/workflows/flake.nix
-                  '' ;
-              write-integration =
-                pkgs.writeShellScriptBin
-                  "write-integration"
-                  ''
-                    source .github/workflows/problems.env &&
-                    source .github/workflows/urls.env &&
-                    TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-                    if [ "${ dollar "TYPE" }" == "implementation" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-implementation.yaml }
-                    elif [ "${ dollar "TYPE" }" == "test" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHE
-CK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.yaml }
-                    elif [ "${ dollar "TYPE" }" == "tester" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-tester.yaml }
-                    else
-                      ${ pkgs.coreutils }/bin/echo The TYPE value must either be implementation or test or tester &&
-                      exit 64
-                    fi &&
-                    ${ pkgs.coreutils }/bin/cp ${ dollar "TEMP" } .github/workflows/check.yaml &&
-                    ${ pkgs.git }/bin/git rm .github/workflows/problem.env
-                  '' ;
-              write-sad =
-                pkgs.writeShellScriptBin
-                  "write-sad"
-                  ''
-                    ( ${ pkgs.coreutils }/bin/cat > .github/workflows/problems.env <<EOF
-                    CHECK=${ dollar "2" }
-                    REV=${ dollar "1" }
-                    EOF
-                    ) &&
-                    source .github/workflows/urls.env &&
-                    source .github/workflows/problems.env &&
-                    TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-                    if [ "${ dollar "TYPE" }" == "implementation" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "s#${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-implementation.yaml }
-                    elif [ "${ dollar "TYPE" }" == "test" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "s#${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-test.yaml }
-                    elif [ "${ dollar "TYPE" }" == "tester" ]
-                    then
-                      ${ pkgs.gnused }/bin/sed -e "s_#\${ dollar "IMPLEMENTATION" }_#${ dollar "IMPLEMENTATION" }_" -e "s_#\${ dollar "TEST" }_#${ dollar "TEST" }_" -e "s#${ dollar "REV" }#${ dollar "REV" }#" -e "s#${ dollar "CHECK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/sad-tester.yaml }
-                    else
-                      ${ pkgs.coreutils }/bin/echo The TYPE value must either be implementation or test or tester &&
-                      exit 64
-                    fi &&
-                    ${ pkgs.coreutils }/bin/cp ${ dollar "TEMP" } .github/workflows/check.yaml &&
-                    ${ pkgs.git }/bin/git add .github/workflows/problems.env
-                  '' ;
               in
                 [
 		  (
 		    pkgs.writeShellScriptBin
 		      "write-workflow-init"
 		      ''
-		        IMPLEMENTATION=${ dollar "1" } &&
-			TEST=${ dollar "2" } &&
-			TESTER=${ dollar "3" } &&
-			TYPE=${ dollar "4" } &&
+		        NAME=${ dollar "1" } &&
+		        IMPLEMENTATION=${ dollar "2" } &&
+			TEST=${ dollar "3" } &&
+			TESTER=${ dollar "4" } &&
+			TYPE=${ dollar "5" } &&
 		        if [ -d .github ] && ! ${ pkgs.git }/bin/rm --recursive .github
 			then
 			  ${ pkgs.coreutils }/bin/rm --recursive --force .github
@@ -154,13 +39,13 @@ CK" }#${ dollar "CHECK" }#" -e "w${ dollar "TEMP" }" ${ ./yaml/integration-test.
 			${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
 			if [ "${ dollar "TYPE" }" == "implementation" ]
 			then
-			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#\${ dollar "GITHUB_WORKSPACE" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
+			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
 			elif [ "${ dollar "TYPE" }" == "test" ]
 			then
-			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#\${ dollar "GITHUB_WORKSPACE" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
+			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
 			elif [ "${ dollar "TYPE" }" == "tester" ]
 			then
-			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#\${ dollar "GITHUB_WORKSPACE" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#\${ dollar "GITHUB_WORKSPACE" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
+			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#\/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
 			else
 			  ${ pkgs.coreutils }/bin/echo Unknown Type ${ dollar "TYPE" } &&
 			  exit 64
