@@ -19,4 +19,6 @@ jobs:
       - uses: cachix/install-nix-action@v17
         with:
           extra_nix_configs: access-tokens = github.com=${{ secrets.token }}
-      - run: cd .github/workflows/check && nix develop --command check
+      - env:
+        FLAKE_DIRECTORY: .github/workflows/check 
+      - run: cd ${FLAKE_DIRECTORY} && nix develop --command check
