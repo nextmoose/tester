@@ -1,0 +1,16 @@
+name: test
+on:
+  push: 
+jobs:
+  pre-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v17
+        with:
+          extra_nix_configs: access-tokens = github.com=${{ secrets.token }}
+      - run: cd .github/workflows/check && nix develop --command check
