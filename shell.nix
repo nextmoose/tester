@@ -91,9 +91,11 @@
                         IMPLEMENTATION=$( ${ pkgs.gnugrep }/bin/grep "implementation.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
                         TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
                         TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
+			${ pkgs.coreutils }/bin/echo ABOUT TO GREP &&
                         ${ pkgs.gnugrep }/bin/grep '^        implementation.url = "${ dollar "IMPLEMENTATION" }.*" ;' .github/workflows/pre-check/flake.nix &&
                         ${ pkgs.gnugrep }/bin/grep '^        test.url = "${ dollar "TEST" }.*" ;' .github/workflows/pre-check/flake.nix &&
                         ${ pkgs.gnugrep }/bin/grep '^        tester.url = "${ dollar "TESTER" }.*" ;' .github/workflows/pre-check/flake.nix &&
+			${ pkgs.coreutils }/bin/echo FINISHED GREP &&
                         ${ pkgs.gnugrep }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.${ dollar "TEMP" }/pre-check.nix" &&
                         ${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/pre-check/flake.nix &&
                         ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/pre-check.nix > .github/workflows/pre-check/flake.nix &&
