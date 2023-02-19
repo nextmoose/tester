@@ -92,6 +92,9 @@
                         TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
                         TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
 			${ pkgs.coreutils }/bin/echo ABOUT TO GREP &&
+			${ pkgs.coreutils }/bin/echo ${ dollar "IMPLEMENTATION" } &&
+			${ pkgs.coreutils }/bin/echo ${ dollar "TEST" } &&
+			${ pkgs.coreutils }/bin/echo ${ dollar "TESTER" } &&
                         ${ pkgs.gnugrep }/bin/grep '^        implementation.url = "${ dollar "IMPLEMENTATION" }.*" ;' .github/workflows/pre-check/flake.nix &&
                         ${ pkgs.gnugrep }/bin/grep '^        test.url = "${ dollar "TEST" }.*" ;' .github/workflows/pre-check/flake.nix &&
                         ${ pkgs.gnugrep }/bin/grep '^        tester.url = "${ dollar "TESTER" }.*" ;' .github/workflows/pre-check/flake.nix &&
