@@ -22,6 +22,14 @@
 		    pkgs.writeShellScriptBin
 		      "write-workflow-init"
 		      ''
+		        TARGET='^init/.*$' &&
+		        if [[ "$( ${ pkgs.git }/bin/git branch --show-current )" =~ ${ dollar "TARGET" } ]]
+			then
+			  ${ pkgs.coreutils }/bin/echo GOOD TARGET
+			else
+			  ${ pkgs.coreutils }/bin/echo NOT ON TARGET BRANCH
+			  exit 64
+			fi &&
 		        NAME=${ dollar "1" } &&
 		        IMPLEMENTATION=${ dollar "2" } &&
 			TEST=${ dollar "3" } &&
@@ -60,7 +68,7 @@
 			fi &&
 			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
 			${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "true" } ] } , versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , needs : [ "branch" ] , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
+			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "TARGET=^init/.* && [[ ${ dollar "GITHUB_REF_NAME" } =~ ${ dollar "TARGET" } ]]" } ] } , versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , needs : [ "branch" ] , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
 			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
 			${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
