@@ -60,7 +60,7 @@
 			fi &&
 			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
 			${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
+			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "true" } ] } , versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
 			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
 			${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
@@ -70,36 +70,23 @@
 		    pkgs.writeShellScriptBin
 		      "write-workflow-happy"
 		      ''
-		        prefix ( )
-			{
-			  MATCH=$( ${ pkgs.coreutils }/bin/echo ${ dollar "2" } | ${ pkgs.gnused }/bin/sed -e "s#^\(${ dollar "1" }\).*/$#\1#" ) &&
-			  if [ "${ dollar "MATCH" }" == "${ dollar "1" }" ]
-			  then
-			    ${ pkgs.coreutils }/bin/echo ${ dollar "MATCH" }
-			  else
-			    ${ pkgs.coreutils }/bin/echo The prefix ${ dollar 1 } does not match the expression ${ dollar 2 } > /dev/stderr
-			    exit 64
-			  fi
-			} &&
-		        PRE_IMPLEMENTATION=$( ${ pkgs.gnugrep }/bin/grep "implementation.url" .github/workflows/pre-check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-		        PRE_TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/pre-check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-		        PRE_TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/pre-check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-		        POST_IMPLEMENTATION=$( ${ pkgs.gnugrep }/bin/grep "implementation.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-		        POST_TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-		        POST_TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-			IMPLEMENTATION=$( prefix ${ dollar "POST_IMPLEMENTATION" } ${ dollar "PRE_IMPLEMENTATION" } ) &&
-			TEST=$( prefix ${ dollar "POST_TEST" } ${ dollar "PRE_TEST" } ) &&
-			TESTER=$( prefix ${ dollar "POST_TESTER" } ${ dollar "PRE_TESTER" } ) &&
-			${ pkgs.coreutils }/bin/chmod 0600 .github/workflows
-			${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }##"
-		        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-		        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { "pre-check" : ( { "runs-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check \"\"" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check \"\"" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" } &&
+		        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
+		        IMPLEMENTATION=$( ${ pkgs.gnugrep }/bin/grep "implementation.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
+		        TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
+		        TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
+			${ pkgs.gnused }/bin/grep '^        implementation.url = "${ dollar "IMPLEMENTATION" }.*" ;' .github/workflows/pre-check/flake.nix &&
+			${ pkgs.gnused }/bin/grep '^        test.url = "${ dollar "TEST" }.*" ;' .github/workflows/pre-check/flake.nix &&
+			${ pkgs.gnused }/bin/grep '^        tester.url = "${ dollar "TESTER" }.*" ;' .github/workflows/pre-check/flake.nix &&
+			${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.${ dollar "TEMP" }/pre-check.nix" &&
+			${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/pre-check/flake.nix &&
+			${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/pre-check.nix > .github/workflows/pre-check/flake.nix &&
+		        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { "pre-check" : ( { "runs-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check \"\"" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check \"\"" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" }/test.yaml &&
 			${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
-			${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
+			${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/test.yaml > .github/workflows/test.yaml &&
 			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
 			${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
-			${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" } &&
+			${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" }
 		      ''
 		  )
                   pkgs.chromium
