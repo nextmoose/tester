@@ -5,7 +5,7 @@ jobs:
   branch:
     runs-on: ubuntu-latest
     steps:
-      - run: 'true'
+      - run: true && env
   versions:
     runs-on: ubuntu-latest
     steps:
