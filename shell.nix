@@ -18,85 +18,85 @@
               dollar = expression : builtins.concatStringsSep "" [ "$" "{" expression "}" ] ;
               in
                 [
-		  (
-		    pkgs.writeShellScriptBin
-		      "write-workflow-init"
-		      ''
-		        TARGET='^init/.*$' &&
-		        if [[ "$( ${ pkgs.git }/bin/git branch --show-current )" =~ ${ dollar "TARGET" } ]]
-			then
-			  ${ pkgs.coreutils }/bin/echo GOOD TARGET
-			else
-			  ${ pkgs.coreutils }/bin/echo NOT ON TARGET BRANCH
-			  exit 64
-			fi &&
-		        NAME=${ dollar "1" } &&
-		        IMPLEMENTATION=${ dollar "2" } &&
-			TEST=${ dollar "3" } &&
-			TESTER=${ dollar "4" } &&
-			TYPE=${ dollar "5" } &&
-		        if [ -d .github ]
-			then
-			  if ${ pkgs.git }/bin/git rm -r .github
-			  then
-			    ${ pkgs.coreutils }/bin/echo
-			  fi
-			  ${ pkgs.coreutils }/bin/rm --recursive --force .github
-			fi &&
-			${ pkgs.coreutils }/bin/mkdir .github &&
-			${ pkgs.coreutils }/bin/mkdir .github/workflows &&
-			${ pkgs.coreutils }/bin/cp ${ ./workflows/versions.txt } .github/workflows/versions.txt &&
-			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/versions.txt &&
-			${ pkgs.git }/bin/git add .github/workflows/versions.txt &&
-			${ pkgs.coreutils }/bin/mkdir .github/workflows/pre-check &&
-			${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/pre-check/flake.nix" ${ ./workflows/check.nix } &&
-			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/pre-check/flake.nix &&
-			${ pkgs.git }/bin/git add .github/workflows/pre-check/flake.nix &&
-			${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-			if [ "${ dollar "TYPE" }" == "implementation" ]
-			then
-			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
-			elif [ "${ dollar "TYPE" }" == "test" ]
-			then
-			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
-			elif [ "${ dollar "TYPE" }" == "tester" ]
-			then
-			  ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#\/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
-			else
-			  ${ pkgs.coreutils }/bin/echo Unknown Type ${ dollar "TYPE" } &&
-			  exit 64
-			fi &&
-			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
-			${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-			${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "TARGET=^init/.* && [[ ${ dollar "GITHUB_REF_NAME" } =~ ${ dollar "TARGET" } ]]" } ] } , versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , needs : [ "branch" ] , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
-			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-			${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
-		      ''
-		  )
-		  (
-		    pkgs.writeShellScriptBin
-		      "write-workflow-happy"
-		      ''
-		        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
-		        IMPLEMENTATION=$( ${ pkgs.gnugrep }/bin/grep "implementation.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-		        TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-		        TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-			${ pkgs.gnused }/bin/grep '^        implementation.url = "${ dollar "IMPLEMENTATION" }.*" ;' .github/workflows/pre-check/flake.nix &&
-			${ pkgs.gnused }/bin/grep '^        test.url = "${ dollar "TEST" }.*" ;' .github/workflows/pre-check/flake.nix &&
-			${ pkgs.gnused }/bin/grep '^        tester.url = "${ dollar "TESTER" }.*" ;' .github/workflows/pre-check/flake.nix &&
-			${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.${ dollar "TEMP" }/pre-check.nix" &&
-			${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/pre-check/flake.nix &&
-			${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/pre-check.nix > .github/workflows/pre-check/flake.nix &&
-		        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { "pre-check" : ( { "runs-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check \"\"" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check \"\"" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" }/test.yaml &&
-			${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
-			${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/test.yaml > .github/workflows/test.yaml &&
-			${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-			${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-			${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
-			${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" }
-		      ''
-		  )
+                  (
+                    pkgs.writeShellScriptBin
+                      "write-workflow-init"
+                      ''
+                        ${ pkgs.git }/bin/git fetch origin main
+                        ${ pkgs.git }/bin/git checkout -b init/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
+                        ${ pkgs.git }/bin/git commit --all --allow-empty --allow-empty-message --message "" &&
+                        ${ pkgs.git }/bin/git rebase origin/main
+                        NAME=${ dollar "1" } &&
+                        IMPLEMENTATION=${ dollar "2" } &&
+                        TEST=${ dollar "3" } &&
+                        TESTER=${ dollar "4" } &&
+                        TYPE=${ dollar "5" } &&
+                        if [ -d .github ]
+                        then
+                          if ${ pkgs.git }/bin/git rm -r .github
+                          then
+                            ${ pkgs.coreutils }/bin/echo
+                          fi
+                          ${ pkgs.coreutils }/bin/rm --recursive --force .github
+                        fi &&
+                        ${ pkgs.coreutils }/bin/mkdir .github &&
+                        ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
+                        ${ pkgs.coreutils }/bin/cp ${ ./workflows/versions.txt } .github/workflows/versions.txt &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/versions.txt &&
+                        ${ pkgs.git }/bin/git add .github/workflows/versions.txt &&
+                        ${ pkgs.coreutils }/bin/mkdir .github/workflows/pre-check &&
+                        ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/pre-check/flake.nix" ${ ./workflows/check.nix } &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/pre-check/flake.nix &&
+                        ${ pkgs.git }/bin/git add .github/workflows/pre-check/flake.nix &&
+                        ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+                        if [ "${ dollar "TYPE" }" == "implementation" ]
+                        then
+                          ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
+                        elif [ "${ dollar "TYPE" }" == "test" ]
+                        then
+                          ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
+                        elif [ "${ dollar "TYPE" }" == "tester" ]
+                        then
+                          ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#\/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s#\${ dollar "TESTER" }#/home/runner/work/${ dollar "NAME" }/${ dollar "NAME" }#" -e "w.github/workflows/check/flake.nix" ${ ./workflows/check.nix }
+                        else
+                          ${ pkgs.coreutils }/bin/echo Unknown Type ${ dollar "TYPE" } &&
+                          exit 64
+                        fi &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
+                        ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
+                        ${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "TARGET=^init/.* && [[ ${ dollar "GITHUB_REF_NAME" } =~ ${ dollar "TARGET" } ]]" } ] } , versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , needs : [ "branch" ] , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+                        ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+                        ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
+                      ''
+                  )
+                  (
+                    pkgs.writeShellScriptBin
+                      "write-workflow-happy"
+                      ''
+                        ${ pkgs.git }/bin/git checkout -b happy/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
+                        ${ pkgs.git }/bin/git commit --all --allow-empty --message "${ dollar "1" }" &&
+                        ${ pkgs.git }/bin/git fetch origin main &&
+                        ${ pkgs.git }/bin/git rebase origin/main &&
+                        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
+                        IMPLEMENTATION=$( ${ pkgs.gnugrep }/bin/grep "implementation.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
+                        TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
+                        TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
+                        ${ pkgs.gnused }/bin/grep '^        implementation.url = "${ dollar "IMPLEMENTATION" }.*" ;' .github/workflows/pre-check/flake.nix &&
+                        ${ pkgs.gnused }/bin/grep '^        test.url = "${ dollar "TEST" }.*" ;' .github/workflows/pre-check/flake.nix &&
+                        ${ pkgs.gnused }/bin/grep '^        tester.url = "${ dollar "TESTER" }.*" ;' .github/workflows/pre-check/flake.nix &&
+                        ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.${ dollar "TEMP" }/pre-check.nix" &&
+                        ${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/pre-check/flake.nix &&
+                        ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/pre-check.nix > .github/workflows/pre-check/flake.nix &&
+                        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { "pre-check" : ( { "runs-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check \"\"" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check \"\"" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" }/test.yaml &&
+                        ${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
+                        ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/test.yaml > .github/workflows/test.yaml &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+                        ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+                        ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
+                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" }
+                      ''
+                  )
                   pkgs.chromium
                   pkgs.coreutils
                   pkgs.emacs
