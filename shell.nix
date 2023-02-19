@@ -18,6 +18,13 @@
               dollar = expression : builtins.concatStringsSep "" [ "$" "{" expression "}" ] ;
               in
                 [
+		  (
+		    pkgs.writeShellScriptBin
+		      "limits"
+		      ''
+		         ${ pkgs.curl }/bin/curl -i https://api.github.com/users/${ dollar "1" }
+		      ''
+		  )
                   (
                     pkgs.writeShellScriptBin
                       "write-workflow-init"
