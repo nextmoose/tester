@@ -81,6 +81,7 @@
                     pkgs.writeShellScriptBin
                       "write-workflow-happy"
                       ''
+		        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
                         ${ pkgs.git }/bin/git checkout -b happy/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
                         ${ pkgs.git }/bin/git commit --all --allow-empty --message "${ dollar "1" }" &&
                         ${ pkgs.git }/bin/git fetch origin main &&
