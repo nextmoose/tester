@@ -84,24 +84,11 @@
                         ${ pkgs.git }/bin/git checkout -b happy/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
                         ${ pkgs.git }/bin/git commit --all --allow-empty --message "${ dollar "1" }" &&
                         ${ pkgs.git }/bin/git fetch origin main &&
-			${ pkgs.coreutils }/bin/echo ABOUT TO REBASE &&
                         ${ pkgs.git }/bin/git rebase origin/main &&
-			${ pkgs.coreutils }/bin/echo FINISHED REBASE &&
-                        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
-                        IMPLEMENTATION=$( ${ pkgs.gnugrep }/bin/grep "implementation.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-                        TEST=$( ${ pkgs.gnugrep }/bin/grep "test.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-                        TESTER=$( ${ pkgs.gnugrep }/bin/grep "tester.url" .github/workflows/check/flake.nix | ${ pkgs.coreutils }/bin/cut --delimiter "\"" --fields 2 ) &&
-			${ pkgs.coreutils }/bin/echo ABOUT TO GREP &&
-			${ pkgs.coreutils }/bin/echo ${ dollar "IMPLEMENTATION" } &&
-			${ pkgs.coreutils }/bin/echo ${ dollar "TEST" } &&
-			${ pkgs.coreutils }/bin/echo ${ dollar "TESTER" } &&
-                        ${ pkgs.gnugrep }/bin/grep '^        implementation.url = "${ dollar "IMPLEMENTATION" }.*" ;' .github/workflows/pre-check/flake.nix &&
-                        ${ pkgs.gnugrep }/bin/grep '^        test.url = "${ dollar "TEST" }.*" ;' .github/workflows/pre-check/flake.nix &&
-                        ${ pkgs.gnugrep }/bin/grep '^        tester.url = "${ dollar "TESTER" }.*" ;' .github/workflows/pre-check/flake.nix &&
-			${ pkgs.coreutils }/bin/echo FINISHED GREP &&
-                        ${ pkgs.gnugrep }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }#${ dollar "IMPLEMENTATION" }#" -e "s#\${ dollar "TEST" }#${ dollar "TEST" }#" -e "s\${ dollar "TESTER" }#${ dollar "TESTER" }#" -e "w.${ dollar "TEMP" }/pre-check.nix" &&
-                        ${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/pre-check/flake.nix &&
-                        ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/pre-check.nix > .github/workflows/pre-check/flake.nix &&
+			if [ -d .github/workflows/bad-check ]
+			then
+			  ${ pkgs.git }/bin/git rm -r .github/workflows/bad-check
+			fi &&
                         ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { "pre-check" : ( { "runs-on" : "ubuntu-latest" , "steps" : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check \"\"" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check \"\"" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" }/test.yaml &&
                         ${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
                         ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/test.yaml > .github/workflows/test.yaml &&
