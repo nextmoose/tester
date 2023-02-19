@@ -95,6 +95,7 @@
                         ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                         ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
                         ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
+                        ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" } &&
                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" }
                       ''
                   )
