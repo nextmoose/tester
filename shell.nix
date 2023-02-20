@@ -18,13 +18,13 @@
               dollar = expression : builtins.concatStringsSep "" [ "$" "{" expression "}" ] ;
               in
                 [
-		  (
-		    pkgs.writeShellScriptBin
-		      "limits"
-		      ''
-		         ${ pkgs.curl }/bin/curl -i https://api.github.com/users/${ dollar "1" }
-		      ''
-		  )
+                  (
+                    pkgs.writeShellScriptBin
+                      "limits"
+                      ''
+                         ${ pkgs.curl }/bin/curl -i https://api.github.com/users/${ dollar "1" }
+                      ''
+                  )
                   (
                     pkgs.writeShellScriptBin
                       "write-workflow-init"
@@ -74,6 +74,16 @@
                         ${ pkgs.yq }/bin/yq -n --yaml-output '{ name : "test" , "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "TARGET=^init/.* && [[ ${ dollar "GITHUB_REF_NAME" } =~ ${ dollar "TARGET" } ]]" } ] } , versions : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { run : "if [ -f flake.lock ]; then ! cat flake.lock | jq --raw-output \"$( cat .github/workflows/versions.txt )\" --exit-status ; fi" } ] } , "pre-check" : { "runs-on" : "ubuntu-latest" , needs : [ "branch" ] , steps : [ { run : true } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_configs : "access-tokens = github.com=${ dollar "{ secrets.token }" }" } } , { run : "cd .github/workflows/check && nix develop --command check \"\""  } ] } } } ' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > .github/workflows/test.yaml &&
                         ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                         ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+                        ( ${ pkgs.coreutils }/bin/cat > .github/workflows/properties.env <<EOF
+                        NAME=${ dollar "NAME" }
+                        IMPLEMENTATION=${ dollar "IMPLEMENTATION" }
+                        TEST=${ dollar "TEST" }
+                        TESTER=${ dollar "TESTER" }
+                        TYPE=${ dollar "TYPE" }
+                        EOF
+                        ) &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/properties.env &&
+                        ${ pkgs.git }/bin/git add .github/workflows/properties.env &&
                         ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
                       ''
                   )
@@ -81,15 +91,15 @@
                     pkgs.writeShellScriptBin
                       "write-workflow-happy"
                       ''
-		        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
+                        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
                         ${ pkgs.git }/bin/git checkout -b happy/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
                         ${ pkgs.git }/bin/git commit --all --allow-empty --message "${ dollar "1" }" &&
                         ${ pkgs.git }/bin/git fetch origin main &&
                         ${ pkgs.git }/bin/git rebase origin/main &&
-			if [ -d .github/workflows/bad-check ]
-			then
-			  ${ pkgs.git }/bin/git rm -r .github/workflows/bad-check
-			fi &&
+                        if [ -d .github/workflows/bad-check ]
+                        then
+                          ${ pkgs.git }/bin/git rm -r .github/workflows/bad-check
+                        fi &&
                         ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "TARGET=^happy/.* && [[ ${ dollar "GITHUB_REF_NAME" } =~ ${ dollar "TARGET" } ]]" } ] } , "pre-check" : ( { "runs-on" : "ubuntu-latest" , needs : [ "branch" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check \"\"" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check \"\"" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" }/test.yaml &&
                         ${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
                         ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/test.yaml > .github/workflows/test.yaml &&
@@ -97,6 +107,42 @@
                         ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
                         ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
                         ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" } &&
+                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" }
+                      ''
+                  )
+                  (
+                    pkgs.writeShellScriptBin
+                      "write-workflow-sad"
+                      ''
+                        TEMP=$( ${ pkgs.mktemp }/bin/mktemp --directory ) &&
+                        ${ pkgs.git }/bin/git checkout -b sad/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
+                        ${ pkgs.git }/bin/git commit --all --allow-empty --message "${ dollar "1" }" &&
+                        ${ pkgs.git }/bin/git fetch origin main &&
+                        ${ pkgs.git }/bin/git rebase origin/main &&
+                        ${ pkgs.coreutils }/bin/mkdir .github/workflows/bad-check &&
+                        source .github/workflows/properties.env &&
+                        if [ "${ dollar "TYPE" }" == "implementation" ]
+                        then
+                          TEST=${ dollar "TEST" }?rev=${ dollar "REV" }
+                        elif [ "${ dollar "TYPE" }" == "test" ]
+                        then
+                          ${ pkgs.coreutils }/bin/echo TEST
+                        elif [ "${ dollar "TYPE" }" == "tester" ]
+                        then
+                          TEST=${ dollar "TEST" }?rev=${ dollar "REV" }
+                        else
+                          ${ pkgs.coreutils }/bin/echo TYPE ${ dollar "TYPE" } must be implementation, test, or tester &&
+                          exit 64
+                        fi &&
+                        ${ pkgs.gnused }/bin/sed -e "s#\${ dollar "IMPLEMENTATION" }##" -e "s#\${ dollar "TEST" }##" -e "s#\${ dollar "TESTER" }##" -e "w.github/workflows/bad-check/flake.nix" ${ ./workflows/check.nix } &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/bad-check/flake.nix &&
+                        ${ pkgs.git }/bin/git add .github/workflows/bad-check/flake.nix &&
+                        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '. + { "f24675a1-d5e7-4dc6-b731-d1505a8bd447" : { push : "01758bd7-6632-4c2e-b23e-c092d2188838" } , jobs : ( .jobs + { branch : { "runs-on" : "ubuntu-latest" , steps : [ { run : "TARGET=^sad/.* && [[ ${ dollar "GITHUB_REF_NAME" } =~ ${ dollar "TARGET" } ]]" } ] } , "pre-check" : ( { "runs-on" : "ubuntu-latest" , needs : [ "branch" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/pre-check && nix develop --command check \"\"" } ] } ) , check : ( { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses: "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" } , { run : "cd .github/workflows/check && nix develop --command check \"${ dollar "2" }\"" } ] } ) } ) } | del ( .true )' | ${ pkgs.gnused }/bin/sed -e "s#f24675a1-d5e7-4dc6-b731-d1505a8bd447#on#" -e "s#01758bd7-6632-4c2e-b23e-c092d2188838##" > ${ dollar "TEMP" }/test.yaml &&
+                        ${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
+                        ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" }/test.yaml > .github/workflows/test.yaml &&
+                        ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+                        ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+                        ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message "" &&
                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ dollar "TEMP" }
                       ''
                   )
