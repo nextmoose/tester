@@ -3,7 +3,27 @@
     {
       buildInputs =
         let
-         dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
+          dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
+          init =
+            {
+              alpha = "hi" ;
+              test =
+                {
+                  name = "test" ;
+                  "61232b8e-1df9-4f7e-8ec5-538cb9b21aaa" =
+                    {
+                      push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
+                    } ;
+                  vars = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
+                  jobs = { check = { runs-on = "ubuntu-latest" ; steps = [ { runs = true ; } ] ; } ; } ;
+                } ;
+            } ;
+            sed =
+              pkgs.writeShellScript
+	      "sed"
+              ''
+                ${ pkgs.gnused }/bin/sed -e "s#61232b8e-1df9-4f7e-8ec5-538cb9b21aaa#on#" -e "s#e7d90318-28cf-4b6f-81de-cd975c20bc03##" -e "w${ dollar "1" }"
+              '' ;
           in
             [
               pkgs.chromium
@@ -16,6 +36,28 @@
               pkgs.mktemp
               pkgs.yq
               pkgs.moreutils
+              (
+                pkgs.writeShellScriptBin
+                  "write-init-test"
+                  ''
+                    IMPLEMENTATION=${ dollar 1 } &&
+                    TEST=${ dollar 2 } &&
+                    TESTER=${ dollar 3 } &&
+                    if ${ pkgs.git }/bin/git rm -r .github
+                    then
+                      ${ pkgs.coreutils }/bin/rm --recursive --force .github
+                    else
+                      ${ pkgs.coreutils }/bin/rm --recursive --force .github
+                    fi &&
+                    ${ pkgs.coreutils }/bin/mkdir .github &&
+                    ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
+                    ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON init.test }' | ${ sed } .github/workflows/test.yaml &&
+                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+                    ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+                    ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
+                  ''
+              )
               (
                 pkgs.writeShellScriptBin
                  "cleanup"
