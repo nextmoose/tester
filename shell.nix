@@ -40,6 +40,9 @@
                 pkgs.writeShellScriptBin
                   "write-init-test"
                   ''
+		    ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
+		    ${ pkgs.git }/bin/git fetch origin main &&
+		    ${ pkgs.git }/bin/git rebase origin/main &&		    
                     IMPLEMENTATION=${ dollar 1 } &&
                     TEST=${ dollar 2 } &&
                     TESTER=${ dollar 3 } &&
@@ -55,6 +58,9 @@
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/shell.nix } > .github/workflows/check/shell.nix &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
