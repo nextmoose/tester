@@ -14,8 +14,8 @@
                     {
                       push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
                     } ;
-                  vars = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
-                  jobs = { check = { runs-on = "ubuntu-latest" ; steps = [ { runs = true ; } ] ; } ; } ;
+                  env = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
+                  jobs = { check = { runs-on = "ubuntu-latest" ; steps = [ { run = true ; } ] ; } ; } ;
                 } ;
             } ;
             sed =
