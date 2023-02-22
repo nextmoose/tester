@@ -1,0 +1,22 @@
+on:
+  push: 
+jobs:
+  check:
+    needs:
+      - pre-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - with:
+          extra_nix_config: access-tokens = github.com = ${{ secrets.TOKEN }}
+        uses: cachix/install-nix-action@v17
+      - run: nix-shell .github/workflows/check/shell.nix --arg implementation-home
+          true --arg tester-home true --command check
+  pre-check:
+    runs-on: ubuntu-latest
+    steps:
+      - with:
+          extra_nix_config: access-tokens = github.com = ${{ secrets.TOKEN }}
+        uses: cachix/install-nix-action@v17
+      - run: nix-shell .github/workflows/check/shell.nix --command check
+name: test
