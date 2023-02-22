@@ -36,6 +36,22 @@
               pkgs.mktemp
               pkgs.yq
               pkgs.moreutils
+	      (
+	        pkgs.writeShellScriptBin
+	          "manual-check-test"
+		  ''
+                    IMPLEMENTATION="${ dollar 1 }" &&
+                    TESTER="${ dollar 2 }" &&
+		    DEFECT="${ dollar 3 }" &&
+		    ${ pkgs.nix }/bin/nix-shell \
+		      .github/workflows/check/shell.nix \
+		      --argstr implementation-base "${ dollar "IMPLEMENTATION" }" \
+		      --argstr test-base "$( ${ pkgs.coreutils }/bin/pwd )" \
+		      --argstr tester-base "${ dollar "TESTER" }" \
+		      --argstr defect "${ dollar "DEFECT" }" \
+		      --command check
+		  ''
+	      )
               (
                 pkgs.writeShellScriptBin
                   "write-init-test"
@@ -61,6 +77,9 @@
 		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/shell.nix } > .github/workflows/check/shell.nix &&
 		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
 		    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
+		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
