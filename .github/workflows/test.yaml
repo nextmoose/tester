@@ -16,8 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - with:
-          extra_nix_config:
-            access-tokens: github.com = ${{{ secrets.TOKEN }}}
+          extra_nix_config: access-tokens = github.com = ${{{ secrets.TOKEN }}}
         uses: cachix/install-nix-action@v17
       - run: /nix/store/51dip6mv1aszgm2c3yax8j8614bajss2-nix-2.8.1/bin/nix-shell .github/workflows/check/shell.nix
 name: test
