@@ -30,6 +30,7 @@
                           runs-on = "ubuntu-latest" ;
                           steps =
                             [
+                              { uses = "actions/checkout@v3" ; }
                               { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
                               { run = "nix-shell .github/workflows/check/shell.nix --command check" ; }
                             ] ;
