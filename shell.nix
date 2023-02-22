@@ -90,9 +90,14 @@
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
                     ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON init.test }' | ${ sed } .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-                    ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+                    ${ pkgs.git }/bin/git add .github/ workflows/test.yaml &&
 		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/shell.nix } > .github/workflows/check/shell.nix &&
+		    ${ pkgs.coreutils }/bin/sed \
+		      -e "s#^    implementation-base ,\$#    implementation-base ? ${ dollar "IMPLEMENTATION" } ,#" \
+		      -e "s#    test-base ,#    test-base ? ${ dollar "TEST" } ,#" \
+		      -e "s#    tester-base ,#    implementation-base ? ${ dollar "TESTER" } ,#" \
+		      -e "w.github/workflows/check/shell.nix" \
+		      ${ ./workflows/check/shell.nix } &&
 		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
 		    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
 		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
