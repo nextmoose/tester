@@ -106,9 +106,9 @@
                     ${ pkgs.git }/bin/git add .github/ workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
                     ${ pkgs.gnused }/bin/sed \
-                      -e "s#^    implementation-base ,\$#    implementation-base ? ${ dollar "IMPLEMENTATION" } ,#" \
-                      -e "s#    test-base ,#    test-base ? ${ dollar "TEST" } ,#" \
-                      -e "s#    tester-base ,#    implementation-base ? ${ dollar "TESTER" } ,#" \
+                      -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
+                      -e "s#    test-base ,#    test-base ? \"${ dollar "TEST" }\" ,#" \
+                      -e "s#    tester-base ,#    implementation-base ? \"${ dollar "TESTER" }\" ,#" \
                       -e "w.github/workflows/check/shell.nix" \
                       ${ ./workflows/check/shell.nix } &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
@@ -142,9 +142,9 @@
                     ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
                     ${ pkgs.gnused }/bin/sed \
-                      -e "s#^    implementation-base ,\$#    implementation-base ? ${ dollar "IMPLEMENTATION" } ,#" \
-                      -e "s#    test-base ,#    test-base ? ${ dollar "TEST" } ,#" \
-                      -e "s#    tester-base ,#    implementation-base ? ${ dollar "TESTER" } ,#" \
+                      -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
+                      -e "s#    test-base ,#    test-base ? \"${ dollar "TEST" }\" ,#" \
+                      -e "s#    tester-base ,#    implementation-base ? \"${ dollar "TESTER" }\" ,#" \
                       -e "w.github/workflows/check/shell.nix" \
                       ${ ./workflows/check/shell.nix } &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
