@@ -31,7 +31,7 @@
 		        {
 			  runs-on = "ubuntu-latest" ;
 			  needs = [ "pre-check" ] ;
-			  steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix" --arg implementation-home true --arg tester-home true ; } ] ;
+			  steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true" ; } ] ;
 			} ;
 		    } ;
                 } ;
