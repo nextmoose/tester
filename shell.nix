@@ -32,7 +32,7 @@
                           steps =
                             [
                               { uses = "actions/checkout@v3" ; }
-                              { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{{ secrets.TOKEN }}" }" ; } ; }
+                              { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = { access-tokens = "github.com = ${ dollar "{{ secrets.TOKEN }}" }" ; } ; } ; }
                               { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix" ; }
                             ] ;
                         } ;
@@ -40,7 +40,7 @@
                         {
                           runs-on = "ubuntu-latest" ;
                           needs = [ "pre-check" ] ;
-                          steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true" ; } ] ;
+                          steps = [ { run = false ; } ] ;
                         } ;
                     } ;
                 } ;
