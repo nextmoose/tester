@@ -105,7 +105,7 @@
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/ workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-                    ${ pkgs.coreutils }/bin/sed \
+                    ${ pkgs.gnused }/bin/sed \
                       -e "s#^    implementation-base ,\$#    implementation-base ? ${ dollar "IMPLEMENTATION" } ,#" \
                       -e "s#    test-base ,#    test-base ? ${ dollar "TEST" } ,#" \
                       -e "s#    tester-base ,#    implementation-base ? ${ dollar "TESTER" } ,#" \
@@ -141,7 +141,7 @@
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-                    ${ pkgs.coreutils }/bin/sed \
+                    ${ pkgs.gnused }/bin/sed \
                       -e "s#^    implementation-base ,\$#    implementation-base ? ${ dollar "IMPLEMENTATION" } ,#" \
                       -e "s#    test-base ,#    test-base ? ${ dollar "TEST" } ,#" \
                       -e "s#    tester-base ,#    implementation-base ? ${ dollar "TESTER" } ,#" \
