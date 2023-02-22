@@ -15,6 +15,7 @@ jobs:
   pre-check:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - with:
           extra_nix_config: access-tokens = github.com = ${{ secrets.TOKEN }}
         uses: cachix/install-nix-action@v17
