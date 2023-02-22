@@ -25,22 +25,35 @@
                     } ;
                   env = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
                   jobs =
-		    {
-		      pre-check = { runs-on = "ubuntu-latest" ; steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix" ; } ] ; } ;
-		      check =
-		        {
-			  runs-on = "ubuntu-latest" ;
-			  needs = [ "pre-check" ] ;
-			  steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true" ; } ] ;
-			} ;
-		    } ;
+                    {
+                      pre-check =
+                        {
+                          runs-on = "ubuntu-latest" ;
+                          steps =
+                            [
+                              { uses = "actions/checkout@v3" ; }
+                              { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = { access-tokens = "github.com = ${ dollar "{secrets.TOKEN}" }" ; } ; } ; }
+                              { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix" ; }
+                            ] ;
+                        } ;
+                      check =
+                        {
+                          runs-on = "ubuntu-latest" ;
+                          needs = [ "pre-check" ] ;
+                          steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true" ; } ] ;
+                        } ;
+                    } ;
                 } ;
             } ;
             sed =
               pkgs.writeShellScript
-	      "sed"
+              "sed"
               ''
-                ${ pkgs.gnused }/bin/sed -e "s#61232b8e-1df9-4f7e-8ec5-538cb9b21aaa#on#" -e "s#e7d90318-28cf-4b6f-81de-cd975c20bc03##" -e "w${ dollar "1" }"
+                ${ pkgs.gnused }/bin/sed \
+		  -e "s#61232b8e-1df9-4f7e-8ec5-538cb9b21aaa#on#" \
+		  -e "s#e7d90318-28cf-4b6f-81de-cd975c20bc03##" \
+		  -e "s#b200830c-8d41-4c5d-964c-5ecaaba35204#with#" \
+		  -e "w${ dollar "1" }"
               '' ;
           in
             [
@@ -54,29 +67,29 @@
               pkgs.mktemp
               pkgs.yq
               pkgs.moreutils
-	      (
-	        pkgs.writeShellScriptBin
-	          "manual-check-test"
-		  ''
+              (
+                pkgs.writeShellScriptBin
+                  "manual-check-test"
+                  ''
                     IMPLEMENTATION="${ dollar 1 }" &&
                     TESTER="${ dollar 2 }" &&
-		    DEFECT="${ dollar 3 }" &&
-		    ${ pkgs.nix }/bin/nix-shell \
-		      .github/workflows/check/shell.nix \
-		      --argstr implementation-base "${ dollar "IMPLEMENTATION" }" \
-		      --argstr test-base "$( ${ pkgs.coreutils }/bin/pwd )" \
-		      --argstr tester-base "${ dollar "TESTER" }" \
-		      --argstr defect "${ dollar "DEFECT" }" \
-		      --command check
-		  ''
-	      )
+                    DEFECT="${ dollar 3 }" &&
+                    ${ pkgs.nix }/bin/nix-shell \
+                      .github/workflows/check/shell.nix \
+                      --argstr implementation-base "${ dollar "IMPLEMENTATION" }" \
+                      --argstr test-base "$( ${ pkgs.coreutils }/bin/pwd )" \
+                      --argstr tester-base "${ dollar "TESTER" }" \
+                      --argstr defect "${ dollar "DEFECT" }" \
+                      --command check
+                  ''
+              )
               (
                 pkgs.writeShellScriptBin
                   "write-init-test"
                   ''
-		    ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
-		    ${ pkgs.git }/bin/git fetch origin main &&
-		    ${ pkgs.git }/bin/git rebase origin/main &&		    
+                    ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
+                    ${ pkgs.git }/bin/git fetch origin main &&
+                    ${ pkgs.git }/bin/git rebase origin/main &&             
                     IMPLEMENTATION=${ dollar 1 } &&
                     TEST=${ dollar 2 } &&
                     TESTER=${ dollar 3 } &&
@@ -91,18 +104,18 @@
                     ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON init.test }' | ${ sed } .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/ workflows/test.yaml &&
-		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-		    ${ pkgs.coreutils }/bin/sed \
-		      -e "s#^    implementation-base ,\$#    implementation-base ? ${ dollar "IMPLEMENTATION" } ,#" \
-		      -e "s#    test-base ,#    test-base ? ${ dollar "TEST" } ,#" \
-		      -e "s#    tester-base ,#    implementation-base ? ${ dollar "TESTER" } ,#" \
-		      -e "w.github/workflows/check/shell.nix" \
-		      ${ ./workflows/check/shell.nix } &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
-		    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
-		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
-		    ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
+                    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+                    ${ pkgs.coreutils }/bin/sed \
+                      -e "s#^    implementation-base ,\$#    implementation-base ? ${ dollar "IMPLEMENTATION" } ,#" \
+                      -e "s#    test-base ,#    test-base ? ${ dollar "TEST" } ,#" \
+                      -e "s#    tester-base ,#    implementation-base ? ${ dollar "TESTER" } ,#" \
+                      -e "w.github/workflows/check/shell.nix" \
+                      ${ ./workflows/check/shell.nix } &&
+                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
+                    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
+                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
+                    ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
@@ -110,9 +123,9 @@
                 pkgs.writeShellScriptBin
                   "write-init-tester"
                   ''
-		    ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
-		    ${ pkgs.git }/bin/git fetch origin main &&
-		    ${ pkgs.git }/bin/git rebase origin/main &&		    
+                    ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
+                    ${ pkgs.git }/bin/git fetch origin main &&
+                    ${ pkgs.git }/bin/git rebase origin/main &&             
                     IMPLEMENTATION=${ dollar 1 } &&
                     TEST=${ dollar 2 } &&
                     TESTER=${ dollar 3 } &&
@@ -127,13 +140,13 @@
                     ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON init.tester }' | ${ sed } .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/shell.nix } > .github/workflows/check/shell.nix &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
-		    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
-		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
-		    ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
+                    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/shell.nix } > .github/workflows/check/shell.nix &&
+                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
+                    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
+                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
+                    ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
