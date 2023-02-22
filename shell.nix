@@ -6,7 +6,6 @@
           dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
           init =
             {
-              alpha = "hi" ;
               test =
                 {
                   name = "test" ;
@@ -16,6 +15,25 @@
                     } ;
                   env = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
                   jobs = { check = { runs-on = "ubuntu-latest" ; steps = [ { run = true ; } ] ; } ; } ;
+                } ;
+              tester =
+                {
+                  name = "test" ;
+                  "61232b8e-1df9-4f7e-8ec5-538cb9b21aaa" =
+                    {
+                      push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
+                    } ;
+                  env = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
+                  jobs =
+		    {
+		      pre-check = { runs-on = "ubuntu-latest" ; steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix" ; } ] ; } ;
+		      check =
+		        {
+			  runs-on = "ubuntu-latest" ;
+			  needs = [ "pre-check" ] ;
+			  steps = [ { run = "${ pkgs.nix }/bin/nix-shell .github/workflows/check/shell.nix" --arg implementation-home true --arg tester-home true ; } ] ;
+			} ;
+		    } ;
                 } ;
             } ;
             sed =
@@ -71,6 +89,37 @@
                     ${ pkgs.coreutils }/bin/mkdir .github &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
                     ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON init.test }' | ${ sed } .github/workflows/test.yaml &&
+                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+                    ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/shell.nix } > .github/workflows/check/shell.nix &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
+		    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
+                    ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
+                  ''
+              )
+              (
+                pkgs.writeShellScriptBin
+                  "write-init-tester"
+                  ''
+		    ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
+		    ${ pkgs.git }/bin/git fetch origin main &&
+		    ${ pkgs.git }/bin/git rebase origin/main &&		    
+                    IMPLEMENTATION=${ dollar 1 } &&
+                    TEST=${ dollar 2 } &&
+                    TESTER=${ dollar 3 } &&
+                    if ${ pkgs.git }/bin/git rm -r .github
+                    then
+                      ${ pkgs.coreutils }/bin/rm --recursive --force .github
+                    else
+                      ${ pkgs.coreutils }/bin/rm --recursive --force .github
+                    fi &&
+                    ${ pkgs.coreutils }/bin/mkdir .github &&
+                    ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
+                    ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON init.tester }' | ${ sed } .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
