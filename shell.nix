@@ -108,7 +108,7 @@
                     ${ pkgs.gnused }/bin/sed \
                       -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
                       -e "s#    test-base ,#    test-base ? \"${ dollar "TEST" }\" ,#" \
-                      -e "s#    tester-base ,#    implementation-base ? \"${ dollar "TESTER" }\" ,#" \
+                      -e "s#    tester-base ,#    tester-base ? \"${ dollar "TESTER" }\" ,#" \
                       -e "w.github/workflows/check/shell.nix" \
                       ${ ./workflows/check/shell.nix } &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
@@ -144,7 +144,7 @@
                     ${ pkgs.gnused }/bin/sed \
                       -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
                       -e "s#^    test-base ,\$#    test-base ? \"${ dollar "TEST" }\" ,#" \
-                      -e "s#^    tester-base ,\$#    implementation-base ? \"${ dollar "TESTER" }\" ,#" \
+                      -e "s#^    tester-base ,\$#    tester-base ? \"${ dollar "TESTER" }\" ,#" \
                       -e "w.github/workflows/check/shell.nix" \
                       ${ ./workflows/check/shell.nix } &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
