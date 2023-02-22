@@ -6,7 +6,7 @@
     test-base ? "github:nextmoose/tester-test" ,
     test-rev ? null ,
     test-home ? false ,
-    implementation-base ? "github:nextmoose/tester" ,
+    tester-base ? "github:nextmoose/tester" ,
     tester-rev ? null ,
     tester-home ? false ,
     defect ? ""
