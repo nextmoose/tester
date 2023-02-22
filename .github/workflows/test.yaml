@@ -1,0 +1,19 @@
+on:
+  push: 
+env:
+  implementation: $IMPLEMENTATION
+  test: $TEST
+  tester: $TESTER
+jobs:
+  check:
+    needs:
+      - pre-check
+    runs-on: ubuntu-latest
+    steps:
+      - run: /nix/store/51dip6mv1aszgm2c3yax8j8614bajss2-nix-2.8.1/bin/nix-shell .github/workflows/check/shell.nix
+          --arg implementation-home true --arg tester-home true
+  pre-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: /nix/store/51dip6mv1aszgm2c3yax8j8614bajss2-nix-2.8.1/bin/nix-shell .github/workflows/check/shell.nix
+name: test
