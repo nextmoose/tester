@@ -1,12 +1,12 @@
  {
     pkgs ? import ( fetchTarball "https://github.com/NixOS/nixpkgs/archive/bf972dc380f36a3bf83db052380e55f0eaa7dcb6.tar.gz" ) { } ,
-    implementation-base ? github:nextmoose/tester ,
+    implementation-base ? "github:nextmoose/tester" ,
     implementation-rev ? null ,
     implementation-home ? false ,
-    test-base ? github:nextmoose/tester-test ,
+    test-base ? "github:nextmoose/tester-test" ,
     test-rev ? null ,
     test-home ? false ,
-    implementation-base ? github:nextmoose/tester ,
+    implementation-base ? "github:nextmoose/tester" ,
     tester-rev ? null ,
     tester-home ? false ,
     defect ? ""
