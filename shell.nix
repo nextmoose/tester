@@ -23,7 +23,6 @@
                     {
                       push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
                     } ;
-                  env = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
                   jobs =
                     {
                       pre-check =
@@ -31,16 +30,20 @@
                           runs-on = "ubuntu-latest" ;
                           steps =
                             [
-                              { uses = "actions/checkout@v3" ; }
                               { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                              { run = "nix-shell .github/workflows/check/shell.nix" ; }
+                              { run = "nix-shell .github/workflows/check/shell.nix --command check" ; }
                             ] ;
                         } ;
                       check =
                         {
                           runs-on = "ubuntu-latest" ;
-                          needs = [ "pre-check" ] ;
-                          steps = [ { run = false ; } ] ;
+			  needs = [ "pre-check" ] ;
+                          steps =
+                            [
+                              { uses = "actions/checkout@v3" ; }
+                              { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
+                              { run = "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" ; }
+                            ] ;
                         } ;
                     } ;
                 } ;
