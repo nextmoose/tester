@@ -17,7 +17,7 @@
 		      EXPECTED="${ expected }" &&
 		      ${ pkgs.coreutils }/bin/echo OBSERVED=${ dollar "OBSERVED" } &&
 		      ${ pkgs.coreutils }/bin/echo EXPECTED=${ dollar "EXPECTED" } &&
-		      if [[ "${ dollar "OBSERVED" }" =~ "${ dollar "EXPECTED" }" ]]
+		      if [[ ${ dollar "OBSERVED" } =~ ${ dollar "EXPECTED" } ]]
 		      then
 		        ${ pkgs.coreutils }/bin/echo GOOD
 		      else
