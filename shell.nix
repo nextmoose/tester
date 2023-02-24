@@ -159,6 +159,10 @@
                     ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
+		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/test-init-main &&
+		    ${ pkgs.coreutils }/bin/cp ${ ./workflows/test-init-main/shell.nix } .github/workflows/test-init-main/shell.nix &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/shell.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/test-init-main/shell.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
