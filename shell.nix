@@ -65,9 +65,8 @@
 			  needs = [ "check" ] ;
 			  steps =
 			    [
-                              { uses = "actions/checkout@v3" ; }
                               { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                              { run = "nix-shell .github/workflows/post-check/shell.nix --command post-check" ; }
+                              { run = ''nix-shell .github/workflows/post-check/shell.nix --argstr url "${ dollar "TEST_URL" }" --argstr name "${ dollar "TEST_NAME" }" --command post-check'' ; }
 			    ] ;
 			} ;
                     } ;
@@ -163,6 +162,8 @@
                     IMPLEMENTATION=${ dollar 1 } &&
                     TEST=${ dollar 2 } &&
                     TESTER=${ dollar 3 } &&
+		    TEST_URL=${ dollar 4 } &&
+		    TEST_NAME=${ dollar 5 } &&
                     if ${ pkgs.git }/bin/git rm -r .github
                     then
                       ${ pkgs.coreutils }/bin/rm --recursive --force .github
