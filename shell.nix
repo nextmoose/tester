@@ -92,7 +92,7 @@
 		    } ;
                 } ;
             } ;
-	    sed = import ./sed.nix pkgs ;
+	    sed = import ./sed.nix pkgs dollar ;
           in
             [
               pkgs.chromium

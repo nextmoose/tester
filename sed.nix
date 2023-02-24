@@ -1,4 +1,4 @@
-  pkgs :
+  pkgs : dollar :
     pkgs.writeShellScript
       "sed"
       ''
