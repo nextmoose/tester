@@ -13,7 +13,7 @@
                   pkgs.writeShellScriptBin
                     "test-init-main"
                     ''
-		      ${ pkgs.coreutils }/bin/echo ${ dollar "TOKEN" } | ${ pkgs.gh }/bin/gh auth login &&
+		      ${ pkgs.coreutils }/bin/echo ${ dollar "TOKEN" } | ${ pkgs.gh }/bin/gh auth login --with-token &&
 		      ${ pkgs.gh }/bin/gh auth logout
                     ''
                 )
