@@ -15,7 +15,6 @@
                         {
                           push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
                         } ;
-                      env = { implementation = "$IMPLEMENTATION" ; test = "$TEST" ; tester = "$TESTER" ; } ;
                       jobs =
                         {
                           branch =
