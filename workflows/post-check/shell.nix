@@ -12,7 +12,8 @@
                   pkgs.writeShellScriptBin
                     "post-check"
                     ''
-		      ${ pkgs.gh }/bin/gh
+		      ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
+		      ${ pkgs.gh }/bin/gh auth logout
                     ''
                 )
               ] ;
