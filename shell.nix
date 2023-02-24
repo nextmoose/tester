@@ -144,7 +144,7 @@
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
-                    ${ pkgs.coreutils }/bin/cp ${ ./workflows/branch/shell.nix } .github/workflows/branch/shell.nix &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/branch/shell.nix } > .github/workflows/branch/shell.nix &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/branch/shell.nix &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
@@ -160,9 +160,12 @@
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/test-init-main &&
-                    ${ pkgs.coreutils }/bin/cp ${ ./workflows/test-init-main/shell.nix } .github/workflows/test-init-main/shell.nix &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/test-init-main/shell.nix } > .github/workflows/test-init-main/shell.nix &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/shell.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/test-init-main/shell.nix &&
+		    ${ pkgs.coreutils }/bin/cat ${ ./sed.nix } > .github/workflows/test-init-main &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/sed.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/test-init-main/sed.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
@@ -191,7 +194,7 @@
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
-                    ${ pkgs.coreutils }/bin/cp ${ ./workflows/branch/shell.nix } .github/workflows/branch/shell.nix &&
+                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/branch/shell.nix } > .github/workflows/branch/shell.nix &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/branch/shell.nix &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
