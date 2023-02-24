@@ -23,7 +23,7 @@
 			    [
                               { uses = "actions/checkout@v3" ; }
                               { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                              { run = ''nix-shell .github/workflows/branch/shell.nix --argstr target "^init/.*\$" --command branch'' ; }
+                              { run = ''nix-shell .github/workflows/branch/shell.nix --argstr expected "^init/.*$" --command branch'' ; }
 			    ] ;
 		        } ;
 		      check = { runs-on = "ubuntu-latest" ; needs = [ "branch" ] ; steps = [ { run = true ; } ] ; } ;
@@ -45,23 +45,13 @@
 			    [
                               { uses = "actions/checkout@v3" ; }
                               { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                              { run = ''nix-shell .github/workflows/branch/shell.nix --argstr target "^init/.*\$" --command branch'' ; }
+                              { run = ''nix-shell .github/workflows/branch/shell.nix --argstr expected "^init/.*$" --command branch'' ; }
 			    ] ;
 		        } ;
-                      pre-check =
+                       check =
                         {
                           runs-on = "ubuntu-latest" ;
-                          steps =
-                            [
-                              { uses = "actions/checkout@v3" ; }
-                              { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                              { run = "nix-shell .github/workflows/check/shell.nix --command check" ; }
-                            ] ;
-                        } ;
-                      check =
-                        {
-                          runs-on = "ubuntu-latest" ;
-			  needs = [ "branch" "pre-check" ] ;
+			  needs = [ "branch" ] ;
                           steps =
                             [
                               { uses = "actions/checkout@v3" ; }
@@ -69,6 +59,17 @@
                               { run = "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" ; }
                             ] ;
                         } ;
+		      post-check =
+		        {
+			  runs-on = "ubuntu-latest" ;
+			  needs = [ "check" ] ;
+			  steps =
+			    [
+                              { uses = "actions/checkout@v3" ; }
+                              { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
+                              { run = "nix-shell .github/workflows/post-check/shell.nix --command post-check" ; }
+			    ] ;
+			} ;
                     } ;
                 } ;
             } ;
@@ -185,6 +186,10 @@
                     ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
+		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/post-check &&
+		    ${ pkgs.gnused }/bin/sed -e "w.github/workflows/post-check/shell.nix" ${ ./workflows/post-check/shell.nix } &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/post-check/shell.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/post-check/shell.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
