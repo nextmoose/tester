@@ -163,7 +163,7 @@
                     ${ pkgs.coreutils }/bin/cat ${ ./workflows/test-init-main/shell.nix } > .github/workflows/test-init-main/shell.nix &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/shell.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/test-init-main/shell.nix &&
-		    ${ pkgs.coreutils }/bin/cat ${ ./sed.nix } > .github/workflows/test-init-main &&
+		    ${ pkgs.coreutils }/bin/cat ${ ./sed.nix } > .github/workflows/test-init-main/sed.nix &&
 		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/sed.nix &&
 		    ${ pkgs.git }/bin/git add .github/workflows/test-init-main/sed.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
