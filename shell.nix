@@ -37,6 +37,15 @@
                     } ;
                   jobs =
                     {
+		      branch =
+		        {
+			  runs-on "ubuntu-latest" ;
+			  steps =
+			    [
+                              { uses = "actions/checkout@v3" ; }
+                              { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
+                              { run = "nix-shell .github/workflows/branch/shell.nix --argstr target "^test/.*\$" --command branch" ; }
+			    ] ;
                       pre-check =
                         {
                           runs-on = "ubuntu-latest" ;
@@ -50,7 +59,7 @@
                       check =
                         {
                           runs-on = "ubuntu-latest" ;
-			  needs = [ "pre-check" ] ;
+			  needs = [ "branch" , "pre-check" ] ;
                           steps =
                             [
                               { uses = "actions/checkout@v3" ; }
@@ -125,9 +134,6 @@
 		    ${ pkgs.coreutils }/bin/cp ${ ./workflows/shell.nix } .github/workflows/shell.nix &&
 		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/shell.nix &&
 		    ${ pkgs.git }/bin/git add .github/workflows/shell.nix &&
-		    ${ pkgs.coreutils }/bin/cp ${ ./workflows/flake.nix } .github/workflows/flake.nix &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/flake.nix &&
-		    ${ pkgs.git }/bin/git add .github/workflows/flake.nix &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
                     ${ pkgs.gnused }/bin/sed \
                       -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
