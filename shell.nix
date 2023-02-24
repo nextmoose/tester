@@ -18,13 +18,14 @@
 		    {
 		      branch =
 		        {
-			  runs-on "ubuntu-latest" ;
+			  runs-on = "ubuntu-latest" ;
 			  steps =
 			    [
                               { uses = "actions/checkout@v3" ; }
                               { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                              { run = "nix-shell .github/workflows/branch/shell.nix --argstr target "^test/.*\$" --command branch" ; }
+                              { run = ''nix-shell .github/workflows/branch/shell.nix --argstr target "^init/.*\$" --command branch'' ; }
 			    ] ;
+		        } ;
 		      check = { runs-on = "ubuntu-latest" ; needs = [ "branch" ] ; steps = [ { run = true ; } ] ; } ;
 		    } ;
                 } ;
@@ -39,13 +40,14 @@
                     {
 		      branch =
 		        {
-			  runs-on "ubuntu-latest" ;
+			  runs-on = "ubuntu-latest" ;
 			  steps =
 			    [
                               { uses = "actions/checkout@v3" ; }
                               { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                              { run = "nix-shell .github/workflows/branch/shell.nix --argstr target "^test/.*\$" --command branch" ; }
+                              { run = ''nix-shell .github/workflows/branch/shell.nix --argstr target "^init/.*\$" --command branch'' ; }
 			    ] ;
+		        } ;
                       pre-check =
                         {
                           runs-on = "ubuntu-latest" ;
@@ -59,7 +61,7 @@
                       check =
                         {
                           runs-on = "ubuntu-latest" ;
-			  needs = [ "branch" , "pre-check" ] ;
+			  needs = [ "branch" "pre-check" ] ;
                           steps =
                             [
                               { uses = "actions/checkout@v3" ; }
@@ -131,9 +133,9 @@
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                     ${ pkgs.git }/bin/git add .github/ workflows/test.yaml &&
 		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
-		    ${ pkgs.coreutils }/bin/cp ${ ./workflows/shell.nix } .github/workflows/shell.nix &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/shell.nix &&
-		    ${ pkgs.git }/bin/git add .github/workflows/shell.nix &&
+		    ${ pkgs.coreutils }/bin/cp ${ ./workflows/branch/shell.nix } .github/workflows/branch/shell.nix &&
+		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
+		    ${ pkgs.git }/bin/git add .github/workflows/branch/shell.nix &&
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
                     ${ pkgs.gnused }/bin/sed \
                       -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
@@ -153,7 +155,7 @@
                 pkgs.writeShellScriptBin
                   "write-init-tester"
                   ''
-		    ${ pkgs.git }/bin/git checkout -b init/$( ${ util-linux }/bin/uuidgen ) &&
+		    ${ pkgs.git }/bin/git checkout -b init/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
                     ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
                     ${ pkgs.git }/bin/git fetch origin main &&
                     ${ pkgs.git }/bin/git rebase origin/main &&             
