@@ -131,7 +131,7 @@
                     ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
                     ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON init.test }' | ${ sed } .github/workflows/test.yaml &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-                    ${ pkgs.git }/bin/git add .github/ workflows/test.yaml &&
+                    ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 		    ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
 		    ${ pkgs.coreutils }/bin/cp ${ ./workflows/branch/shell.nix } .github/workflows/branch/shell.nix &&
 		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
