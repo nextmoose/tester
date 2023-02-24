@@ -15,20 +15,16 @@ jobs:
       - branch
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - with:
-          extra_nix_config: access-tokens = github.com = ${{ secrets.TOKEN }}
-        uses: cachix/install-nix-action@v17
-      - run: nix-shell .github/workflows/check/shell.nix --arg implementation-home
-          true --arg tester-home true --command check
-  post-check:
+      - run: true
+  test-init-main:
     needs:
       - check
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - with:
           extra_nix_config: access-tokens = github.com = ${{ secrets.TOKEN }}
         uses: cachix/install-nix-action@v17
-      - run: nix-shell .github/workflows/post-check/shell.nix --argstr url "${TEST_URL}"
-          --argstr name "${TEST_NAME}" --command post-check
+      - run: nix-shell .github/workflows/test-init-main/shell.nix --argstr token "${{
+          secrets.TOKEN }}" --command test-init-main
 name: test
