@@ -22,9 +22,9 @@
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.gh }/bin/gh pr create --base "main" --fill  &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto &&
-		  ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
 		  ${ write-init-tester }/bin/write-init-tester ${ dollar "IMPLEMENTATION" } ${ dollar "TEST" } ${ dollar "TESTER" } &&
@@ -33,9 +33,9 @@
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.gh }/bin/gh pr create --base "main" --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto &&
-		  ${ pkgs.gh }/bin/gh auth logout --hostname github.com
+		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
 	      '' ;
           jq =
             {
