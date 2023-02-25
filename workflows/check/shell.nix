@@ -16,15 +16,15 @@
         buildInputs =
           let
             dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
-                      _implementation = mix implementation-base implementation-rev implementation-home ;
-                      _test = mix test-base test-rev test-home ;
-                      _tester = mix tester-base tester-rev tester-home ;
-                      mix =
-                        base : rev : home :
-                          let
-                            separator = if builtins.typeOf rev == "string" then "?" else "" ;
-                            suffix = if builtins.typeOf rev == "string" then rev else "" ;
-                            in if home then "${ dollar "GITHUB_WORKSPACE" }" else builtins.concatStringsSep "" [ base separator suffix ] ;
+           _implementation = mix implementation-base implementation-rev implementation-home ;
+           _test = mix test-base test-rev test-home ;
+           _tester = mix tester-base tester-rev tester-home ;
+           mix =
+             base : rev : home :
+               let
+                 separator = if builtins.typeOf rev == "string" then "?" else "" ;
+                 suffix = if builtins.typeOf rev == "string" then rev else "" ;
+                 in if home then "${ dollar "GITHUB_WORKSPACE" }" else builtins.concatStringsSep "" [ base separator suffix ] ;
             in
               [
                 (
