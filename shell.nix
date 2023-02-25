@@ -17,17 +17,7 @@
                         } ;
                       jobs =
                         {
-                          branch =
-                            {
-                              runs-on = "ubuntu-latest" ;
-                              steps =
-                                [
-                                  { uses = "actions/checkout@v3" ; }
-                                  { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                                  { run = ''nix-shell .github/workflows/branch/shell.nix --argstr expected "^init/.*$" --command branch'' ; }
-                                ] ;
-                            } ;
-                          check = { runs-on = "ubuntu-latest" ; needs = [ "branch" ] ; steps = [ { run = true ; } ] ; } ;
+                          check = { runs-on = "ubuntu-latest" ; steps = [ { run = true ; } ] ; } ;
                           test-init-main =
                             {
                               runs-on = "ubuntu-latest" ;
@@ -50,20 +40,9 @@
                         } ;
                       jobs =
                         {
-                          branch =
-                            {
-                              runs-on = "ubuntu-latest" ;
-                              steps =
-                                [
-                                  { uses = "actions/checkout@v3" ; }
-                                  { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                                  { run = ''nix-shell .github/workflows/branch/shell.nix --argstr expected "^init/.*$" --command branch'' ; }
-                                ] ;
-                            } ;
                           check =
                             {
                               runs-on = "ubuntu-latest" ;
-                              needs = [ "branch" ] ;
                               steps =
                                 [
                                   { uses = "actions/checkout@v3" ; }
@@ -163,9 +142,6 @@
                     ${ pkgs.coreutils }/bin/cat ${ ./workflows/test-init-main/shell.nix } > .github/workflows/test-init-main/shell.nix &&
                     ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/shell.nix &&
                     ${ pkgs.git }/bin/git add .github/workflows/test-init-main/shell.nix &&
-		    ${ pkgs.coreutils }/bin/cat ${ ./sed.nix } > .github/workflows/test-init-main/sed.nix &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/sed.nix &&
-		    ${ pkgs.git }/bin/git add .github/workflows/test-init-main/sed.nix &&
                     ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
