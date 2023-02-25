@@ -1,6 +1,8 @@
  {
     pkgs ? import ( fetchTarball "https://github.com/NixOS/nixpkgs/archive/bf972dc380f36a3bf83db052380e55f0eaa7dcb6.tar.gz" ) { } ,
-    token
+    token ,
+    committer-user ,
+    committer-email
   } :
     pkgs.mkShell
       {
@@ -20,6 +22,8 @@
 		      ${ pkgs.git }/bin/git checkout -b head/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
 		      ${ pkgs.git }/bin/git fetch origin main &&
 		      ${ pkgs.git }/bin/git reset --soft origin/main &&
+		      ${ pkgs.git }/bin/git config user.name "${ committer-user }" &&
+		      ${ pkgs.git }/bin/git config user.email ${ committer-email" } &&
 		      ${ pkgs.git }/bin/git commit --all --reuse-message ${ dollar "COMMIT_ID" } &&
 		      ${ pkgs.gh }/bin/gh pr create --base main --title "INIT" &&
 		      ${ pkgs.gh }/bin/gh pr merge &&
