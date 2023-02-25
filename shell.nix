@@ -4,6 +4,12 @@
       buildInputs =
         let
           dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
+	  execute-init-tester =
+	    pkgs.writeShellScriptBin
+	      "execute-init-tester"
+	      ''
+	      
+	      '' ;
           jq =
             {
               init =
