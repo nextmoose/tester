@@ -26,7 +26,7 @@
                                 [
                                   { uses = "actions/checkout@v3" ; }
                                   { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                                  { run = ''nix-shell .github/workflows/test-init-main/shell.nix --argstr token "${ dollar "{ secrets.TOKEN }" }" --argstr committer-user "${ dollar "COMMITTER_USER" }" --argstr committer-email ${ dollar "COMMITTER_EMAIL" } --command test-init-main'' ; }
+                                  { run = ''nix-shell .github/workflows/test-init-main/shell.nix --argstr token "${ dollar "{ secrets.TOKEN }" }" --argstr committer-user "${ dollar "COMMITTER_USER" }" --argstr committer-email "${ dollar "COMMITTER_EMAIL" }" --command test-init-main'' ; }
                                 ] ;
                             } ;
                         } ;

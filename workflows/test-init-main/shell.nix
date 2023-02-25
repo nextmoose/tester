@@ -15,13 +15,13 @@
                   pkgs.writeShellScriptBin
                     "test-init-main"
                     ''
-		      ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
-		      ${ pkgs.git }/bin/git fetch origin main &&
-		      COMMIT_ID=$( ${ pkgs.git }/bin/git log origin/main..$( ${ pkgs.git }/bin/git branch --show-current ) --pretty=format:%H | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
+		      ${ pkgs.git }/bin/git fetch &&
+		      ${ pkgs.git }/bin/git remote -v &&
+		      ${ pkgs.git }/bin/git log &&
+		      COMMIT_ID=$( ${ pkgs.git }/bin/git log main..$( ${ pkgs.git }/bin/git branch --show-current ) --pretty=format:%H | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
 		      ${ pkgs.coreutils }/bin/echo "COMMIT_ID=${ dollar "COMMIT_ID" }" &&
 		      ${ pkgs.git }/bin/git checkout -b head/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-		      ${ pkgs.git }/bin/git fetch origin main &&
-		      ${ pkgs.git }/bin/git reset --soft origin/main &&
+		      ${ pkgs.git }/bin/git reset --soft ${ dollar "COMMIT_ID" } &&
 		      ${ pkgs.git }/bin/git config user.name "${ committer-user }" &&
 		      ${ pkgs.git }/bin/git config user.email ${ committer-email } &&
 		      ${ pkgs.git }/bin/git commit --all --reuse-message ${ dollar "COMMIT_ID" } &&
