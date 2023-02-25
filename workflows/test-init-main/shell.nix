@@ -19,6 +19,8 @@
 		      ${ pkgs.git }/bin/git fetch origin main &&
 		      ${ pkgs.git }/bin/git reset --soft origin/main &&
 		      ${ pkgs.git }/bin/git commit --all --reuse-message ${ dollar "COMMIT_ID" } &&
+		      ${ pkgs.gh }/bin/gh pr create --base main --title "INIT" &&
+		      ${ pkgs.gh }/bin/gh pr merge &&
 		      ${ pkgs.gh }/bin/gh auth logout --hostname github.com
                     ''
                 )
