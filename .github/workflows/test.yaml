@@ -1,30 +1,13 @@
 on:
   push: 
 jobs:
-  branch:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - with:
-          extra_nix_config: access-tokens = github.com = ${{ secrets.TOKEN }}
-        uses: cachix/install-nix-action@v17
-      - run: nix-shell .github/workflows/branch/shell.nix --argstr expected "^init/.*$"
-          --command branch
   check:
-    needs:
-      - branch
-    runs-on: ubuntu-latest
-    steps:
-      - run: true
-  test-init-main:
-    needs:
-      - check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - with:
           extra_nix_config: access-tokens = github.com = ${{ secrets.TOKEN }}
         uses: cachix/install-nix-action@v17
-      - run: nix-shell .github/workflows/test-init-main/shell.nix --argstr token "${{
-          secrets.TOKEN }}" --command test-init-main
+      - run: nix-shell .github/workflows/check/shell.nix --arg implementation-home
+          true --arg tester-home true --command check
 name: test
