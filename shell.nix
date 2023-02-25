@@ -18,17 +18,6 @@
                       jobs =
                         {
                           check = { runs-on = "ubuntu-latest" ; steps = [ { run = true ; } ] ; } ;
-                          test-init-main =
-                            {
-                              runs-on = "ubuntu-latest" ;
-                              needs = [ "check" ] ;
-                              steps =
-                                [
-                                  { uses = "actions/checkout@v3" ; }
-                                  { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                                  { run = ''nix-shell .github/workflows/test-init-main/shell.nix --argstr token "${ dollar "{ secrets.TOKEN }" }" --argstr committer-user "${ dollar "COMMITTER_USER" }" --argstr committer-email "${ dollar "COMMITTER_EMAIL" }" --command test-init-main'' ; }
-                                ] ;
-                            } ;
                         } ;
                     } ;
                   tester =
@@ -48,16 +37,6 @@
                                   { uses = "actions/checkout@v3" ; }
                                   { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
                                   { run = "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" ; }
-                                ] ;
-                            } ;
-                          post-check =
-                            {
-                              runs-on = "ubuntu-latest" ;
-                              needs = [ "check" ] ;
-                              steps =
-                                [
-                                  { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                                  { run = ''nix-shell .github/workflows/post-check/shell.nix --argstr url "${ dollar "TEST_URL" }" --argstr name "${ dollar "TEST_NAME" }" --command post-check'' ; }
                                 ] ;
                             } ;
                         } ;
@@ -83,8 +62,6 @@
                   IMPLEMENTATION=${ dollar 1 } &&
                   TEST=${ dollar 2 } &&
                   TESTER=${ dollar 3 } &&
-                  COMMIT_USER="${ dollar 4 }" &&
-                  COMMIT_EMAIL=${ dollar 5 } &&
                   if ${ pkgs.git }/bin/git rm -r .github
                   then
                     ${ pkgs.coreutils }/bin/rm --recursive --force .github
@@ -96,8 +73,6 @@
                   ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON jq.init.test }' | ${ sed } .github/workflows/test.yaml &&
                   ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                   ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
-                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/branch/shell.nix } > .github/workflows/branch/shell.nix &&
                   ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
                   ${ pkgs.git }/bin/git add .github/workflows/branch/shell.nix &&
                   ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
@@ -112,10 +87,6 @@
                   ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
                   ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
                   ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/test-init-main &&
-                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/test-init-main/shell.nix } > .github/workflows/test-init-main/shell.nix &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/shell.nix &&
-                  ${ pkgs.git }/bin/git add .github/workflows/test-init-main/shell.nix &&
                   ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                 '' ;
 	    write-init-tester =
@@ -129,8 +100,6 @@
                   IMPLEMENTATION=${ dollar 1 } &&
                   TEST=${ dollar 2 } &&
                   TESTER=${ dollar 3 } &&
-                  TEST_URL=${ dollar 4 } &&
-                  TEST_NAME=${ dollar 5 } &&
                   if ${ pkgs.git }/bin/git rm -r .github
                   then
                     ${ pkgs.coreutils }/bin/rm --recursive --force .github
@@ -142,10 +111,6 @@
                   ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON jq.init.tester }' | ${ sed } .github/workflows/test.yaml &&
                   ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
                   ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
-                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/branch/shell.nix } > .github/workflows/branch/shell.nix &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
-                  ${ pkgs.git }/bin/git add .github/workflows/branch/shell.nix &&
                   ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
                   ${ pkgs.gnused }/bin/sed \
                     -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
@@ -158,10 +123,6 @@
                   ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
                   ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
                   ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/post-check &&
-                  ${ pkgs.gnused }/bin/sed -e "w.github/workflows/post-check/shell.nix" ${ ./workflows/post-check/shell.nix } &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/post-check/shell.nix &&
-                  ${ pkgs.git }/bin/git add .github/workflows/post-check/shell.nix &&
                   ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                 '' ;
           in
