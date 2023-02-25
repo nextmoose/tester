@@ -61,17 +61,63 @@
                                 ] ;
                             } ;
                         } ;
-		    } ;
-		  init-to-main =
-		    {
-		      test =
-		        {
-			  
-			} ;
-		    } ;
+                    } ;
+                  init-to-main =
+                    {
+                      test =
+                        {
+                          
+                        } ;
+                    } ;
                 } ;
             } ;
-	    sed = import ./sed.nix pkgs dollar ;
+            sed = import ./sed.nix pkgs dollar ;
+            write-init-test =
+              pkgs.writeShellScriptBin
+                "write-init-test"
+                ''
+                  ${ pkgs.git }/bin/git checkout -b init/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
+                  ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
+                  ${ pkgs.git }/bin/git fetch origin main &&
+                  ${ pkgs.git }/bin/git rebase origin/main &&             
+                  IMPLEMENTATION=${ dollar 1 } &&
+                  TEST=${ dollar 2 } &&
+                  TESTER=${ dollar 3 } &&
+                  COMMIT_USER="${ dollar 4 }" &&
+                  COMMIT_EMAIL=${ dollar 5 } &&
+                  if ${ pkgs.git }/bin/git rm -r .github
+                  then
+                    ${ pkgs.coreutils }/bin/rm --recursive --force .github
+                  else
+                    ${ pkgs.coreutils }/bin/rm --recursive --force .github
+                  fi &&
+                  ${ pkgs.coreutils }/bin/mkdir .github &&
+                  ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
+                  ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON jq.init.test }' | ${ sed } .github/workflows/test.yaml &&
+                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+                  ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
+                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
+                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/branch/shell.nix } > .github/workflows/branch/shell.nix &&
+                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
+                  ${ pkgs.git }/bin/git add .github/workflows/branch/shell.nix &&
+                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
+                  ${ pkgs.gnused }/bin/sed \
+                    -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
+                    -e "s#    test-base ,#    test-base ? \"${ dollar "TEST" }\" ,#" \
+                    -e "s#    tester-base ,#    tester-base ? \"${ dollar "TESTER" }\" ,#" \
+                    -e "w.github/workflows/check/shell.nix" \
+                    ${ ./workflows/check/shell.nix } &&
+                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
+                  ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
+                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
+                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
+                  ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
+                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/test-init-main &&
+                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/test-init-main/shell.nix } > .github/workflows/test-init-main/shell.nix &&
+                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/shell.nix &&
+                  ${ pkgs.git }/bin/git add .github/workflows/test-init-main/shell.nix &&
+                  ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
+                '' ;
           in
             [
               pkgs.chromium
@@ -84,6 +130,7 @@
               pkgs.mktemp
               pkgs.yq
               pkgs.moreutils
+              write-init-test
               (
                 pkgs.writeShellScriptBin
                   "manual-check-test"
@@ -98,53 +145,6 @@
                       --argstr tester-base "${ dollar "TESTER" }" \
                       --argstr defect "${ dollar "DEFECT" }" \
                       --command check
-                  ''
-              )
-              (
-                pkgs.writeShellScriptBin
-                  "write-init-test"
-                  ''
-                    ${ pkgs.git }/bin/git checkout -b init/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-                    ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
-                    ${ pkgs.git }/bin/git fetch origin main &&
-                    ${ pkgs.git }/bin/git rebase origin/main &&             
-                    IMPLEMENTATION=${ dollar 1 } &&
-                    TEST=${ dollar 2 } &&
-                    TESTER=${ dollar 3 } &&
-		    COMMIT_USER="${ dollar 4 }" &&
-		    COMMIT_EMAIL=${ dollar 5 } &&
-                    if ${ pkgs.git }/bin/git rm -r .github
-                    then
-                      ${ pkgs.coreutils }/bin/rm --recursive --force .github
-                    else
-                      ${ pkgs.coreutils }/bin/rm --recursive --force .github
-                    fi &&
-                    ${ pkgs.coreutils }/bin/mkdir .github &&
-                    ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
-                    ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON jq.init.test }' | ${ sed } .github/workflows/test.yaml &&
-                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-                    ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-                    ${ pkgs.coreutils }/bin/mkdir .github/workflows/branch &&
-                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/branch/shell.nix } > .github/workflows/branch/shell.nix &&
-                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/branch/shell.nix &&
-                    ${ pkgs.git }/bin/git add .github/workflows/branch/shell.nix &&
-                    ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-                    ${ pkgs.gnused }/bin/sed \
-                      -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
-                      -e "s#    test-base ,#    test-base ? \"${ dollar "TEST" }\" ,#" \
-                      -e "s#    tester-base ,#    tester-base ? \"${ dollar "TESTER" }\" ,#" \
-                      -e "w.github/workflows/check/shell.nix" \
-                      ${ ./workflows/check/shell.nix } &&
-                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
-                    ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
-                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
-                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
-                    ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-                    ${ pkgs.coreutils }/bin/mkdir .github/workflows/test-init-main &&
-                    ${ pkgs.coreutils }/bin/cat ${ ./workflows/test-init-main/shell.nix } > .github/workflows/test-init-main/shell.nix &&
-                    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test-init-main/shell.nix &&
-                    ${ pkgs.git }/bin/git add .github/workflows/test-init-main/shell.nix &&
-                    ${ pkgs.git }/bin/git commit --allow-empty-message --message ""
                   ''
               )
               (

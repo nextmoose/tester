@@ -9,21 +9,34 @@
         buildInputs =
 	  let
             dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
+	    sed = import ./sed.nix pkgs dollar ;
+	    expression =
+	      let
+	        expression =
+		  {
+		    "61232b8e-1df9-4f7e-8ec5-538cb9b21aaa" =
+		      {
+		        push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
+		      } ;
+		    steps =
+		      {
+		        
+		      }
+		  } ;
+	        in ". + ( ${ builtins.toJSON expression } )";
 	    in
               [
                 (
                   pkgs.writeShellScriptBin
                     "test-init-main"
                     ''
-		      ${ pkgs.git }/bin/git fetch &&
-		      ${ pkgs.git }/bin/git remote -v &&
-		      ${ pkgs.git }/bin/git log &&
-		      COMMIT_ID=$( ${ pkgs.git }/bin/git log main..$( ${ pkgs.git }/bin/git branch --show-current ) --pretty=format:%H | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
-		      ${ pkgs.coreutils }/bin/echo "COMMIT_ID=${ dollar "COMMIT_ID" }" &&
-		      ${ pkgs.git }/bin/git checkout -b head/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-		      ${ pkgs.git }/bin/git reset --soft ${ dollar "COMMIT_ID" } &&
-		      ${ pkgs.git }/bin/git config user.name "${ committer-user }" &&
-		      ${ pkgs.git }/bin/git config user.email ${ committer-email } &&
+		      ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		      ${ pkgs.git }/bin/git config user.name "${ committer-email }" &&
+		      ${ pkgs.git }/bin/git config user.email "${ committer-email }" &&
+		      TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
+		      ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.jq }/bin/jq 'expression' | ${ sed } ${ dollar "TEMP" } &&
+		      ${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
+		      ${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" } &&
 		      ${ pkgs.git }/bin/git commit --all --reuse-message ${ dollar "COMMIT_ID" } &&
 		      ${ pkgs.gh }/bin/gh pr create --base main --title "INIT" &&
 		      ${ pkgs.gh }/bin/gh pr merge &&
