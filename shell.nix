@@ -3,6 +3,7 @@
     {
       buildInputs =
         let
+	  sleep = "3m" ;
 	  constants =
 	    {
 	      on = "6ef4ab1f-e39a-4184-a7b1-03ef39c05786" ;
@@ -33,7 +34,7 @@
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
@@ -47,7 +48,7 @@
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  cd ${ dollar "LOCAL_TEST" } &&
@@ -61,7 +62,7 @@
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
@@ -75,7 +76,7 @@
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
 	      '' ;
@@ -145,7 +146,7 @@
 	      "write-happy-test"
 	      ''
 	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ builtins.toJSON jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
+	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
 		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
@@ -156,7 +157,7 @@
 	      "write-happy-tester"
 	      ''
 	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ builtins.toJSON jq.happy.tester }' | ${ sed } ${ dollar "TEMP" } &&
+	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ jq.happy.tester }' | ${ sed } ${ dollar "TEMP" } &&
 		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
