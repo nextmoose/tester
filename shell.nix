@@ -132,7 +132,7 @@
 	      "write-happy-test"
 	      ''
 	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.jq } --yaml-output '${ builtins.toJSON jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
+	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ builtins.toJSON jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
 	      '' ;
@@ -141,7 +141,7 @@
 	      "write-happy-tester"
 	      ''
 	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.jq } --yaml-output '${ builtins.toJSON jq.happy.tester }' | ${ sed } ${ dollar "TEMP" } &&
+	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ builtins.toJSON jq.happy.tester }' | ${ sed } ${ dollar "TEMP" } &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
 	      '' ;
