@@ -24,6 +24,7 @@
 		  LOCAL_IMPLEMENTATION=${ dollar 4 } &&
 		  LOCAL_TEST=${ dollar 5 } &&
 		  LOCAL_TESTER=${ dollar "LOCAL_IMPLEMENTATION" } &&
+		  TARGET=^https://github.com/.*/.*/pull/\([0-9]*\)\$ &&
 		  ${ pkgs.coreutils }/bin/echo TEST PHASE 1 &&
 		  cd ${ dollar "LOCAL_TEST" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
@@ -33,11 +34,25 @@
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
+		  LINE_1=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
+		  if [[ ${ dollar "LINE_1" } =~ ${ dollar "TARGET" } ]]
+		  then
+		    LINE=${ dollar "LINE_1" } &&
+		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
+		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
+		    while ! [ -z "${ dollar "LINE" }" ]
+		    do
+		      LINE=$( ${ pkgs.gh }/bin/gh pr list | grep "^${ dollar "MATCH" }.*\$" )
+		      ${ pkgs.coreutils }/bin/echo sleep 1s
+		    done &&
+		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		  else
+		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
+		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
+		  fi &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 1 &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
@@ -48,11 +63,25 @@
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
+		  LINE_2=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
+		  if [[ ${ dollar "LINE_2" } =~ ${ dollar "TARGET" } ]]
+		  then
+		    LINE=${ dollar "LINE_1" } &&
+		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
+		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
+		    while ! [ -z "${ dollar "LINE" }" ]
+		    do
+		      LINE=$( ${ pkgs.gh }/bin/gh pr list | grep "^${ dollar "MATCH" }.*\$" )
+		      ${ pkgs.coreutils }/bin/echo sleep 1s
+		    done &&
+		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		  else
+		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
+		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
+		  fi &&
 		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  ${ pkgs.coreutils }/bin/echo TEST PHASE 2 &&
 		  cd ${ dollar "LOCAL_TEST" } &&
@@ -155,7 +184,7 @@
 		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/git add .github/workflows/test.yaml &&
+		${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
 	      '' ;
 	    write-happy-tester =
@@ -167,7 +196,7 @@
 		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/git add .github/workflows/test.yaml &&
+		${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
 	      '' ;
             write-init-test =
