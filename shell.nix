@@ -4,6 +4,7 @@
       buildInputs =
         let
 	  sleep = "3m" ;
+	  auto-merge = true ;
 	  constants =
 	    {
 	      on = "6ef4ab1f-e39a-4184-a7b1-03ef39c05786" ;
@@ -23,6 +24,7 @@
 		  LOCAL_IMPLEMENTATION=${ dollar 4 } &&
 		  LOCAL_TEST=${ dollar 5 } &&
 		  LOCAL_TESTER=${ dollar "LOCAL_IMPLEMENTATION" } &&
+		  ${ pkgs.coreutils }/bin/echo TEST PHASE 1 &&
 		  cd ${ dollar "LOCAL_TEST" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
 		  ${ write-init-test }/bin/write-init-test ${ dollar "IMPLEMENTATION" } ${ dollar "TEST" } ${ dollar "TESTER" } &&
@@ -32,11 +34,12 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 1 &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
 		  ${ write-init-tester }/bin/write-init-tester ${ dollar "IMPLEMENTATION" } ${ dollar "TEST" } ${ dollar "TESTER" } &&
@@ -46,11 +49,12 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  ${ pkgs.coreutils }/bin/echo TEST PHASE 2 &&
 		  cd ${ dollar "LOCAL_TEST" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
 		  ${ write-happy-test }/bin/write-happy-test &&
@@ -60,11 +64,12 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Re-establishing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 2 &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
 		  ${ write-happy-tester }/bin/write-happy-tester &&
@@ -74,10 +79,10 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Reestablishing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  ${ pkgs.gh }/bin/gh pr status &&
+		  # ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
 	      '' ;
           jq =
