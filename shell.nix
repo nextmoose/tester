@@ -3,6 +3,14 @@
     {
       buildInputs =
         let
+	  constants =
+	    {
+	      on = "6ef4ab1f-e39a-4184-a7b1-03ef39c05786" ;
+	      push = "7f685616-ce05-4275-8630-a9bcc8d7cd09" ;
+	      _with = "921d70d5-1dbe-4427-99dd-e4138d4b17fe" ;
+	      jobs = "93e9beb9-c316-4c18-bcf7-b9e42a573b9f" ;
+	      check = "0898c9f0-741d-4702-bf35-464e239e3320" ;
+	    } ;
           dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
 	  execute-init-tester =
 	    pkgs.writeShellScriptBin
@@ -35,18 +43,44 @@
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
-		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
+		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  cd ${ dollar "LOCAL_TEST" } &&
+		  ${ write-happy-test }/bin/write-happy-test &&
+		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
+		  ${ pkgs.git }/bin/git fetch origin main &&
+		  ${ pkgs.git }/bin/git reset --soft origin/main &&
+		  ${ pkgs.git }/bin/git commit --allow-empty --message "Re-establishing test" &&
+		  ${ pkgs.git }/bin/git push origin HEAD &&
+		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
+		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
+		  ${ write-happy-tester }/bin/write-happy-tester &&
+		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
+		  ${ pkgs.git }/bin/git fetch origin main &&
+		  ${ pkgs.git }/bin/git reset --soft origin/main &&
+		  ${ pkgs.git }/bin/git commit --allow-empty --message "Reestablishing implementation which happens to also be tester" &&
+		  ${ pkgs.git }/bin/git push origin HEAD &&
+		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
 	      '' ;
           jq =
             {
+	      happy =
+	        {
+		  test = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : [ { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "secrets.TOKEN" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] , check :  [ { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "secrets.TOKEN" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg test-home true --command check" } ] } ) }'' ;
+		  tester = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : [ { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "secrets.TOKEN" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] , check :  [ { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "secrets.TOKEN" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" } ] } ) }'' ;
+		} ;
               init =
                 {
                   test =
                     {
                       name = "test" ;
-                      "61232b8e-1df9-4f7e-8ec5-538cb9b21aaa" =
+                      "${ constants.on }" =
                         {
-                          push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
+                          push = constants.push ;
                         } ;
                       jobs =
                         {
@@ -56,9 +90,9 @@
                   tester =
                     {
                       name = "test" ;
-                      "61232b8e-1df9-4f7e-8ec5-538cb9b21aaa" =
+                      "${ constants.on }" =
                         {
-                          push = "e7d90318-28cf-4b6f-81de-cd975c20bc03" ;
+                          push = constants.push ;
                         } ;
                       jobs =
                         {
@@ -68,7 +102,7 @@
                               steps =
                                 [
                                   { uses = "actions/checkout@v3" ; }
-                                  { uses = "cachix/install-nix-action@v17" ; "b200830c-8d41-4c5d-964c-5ecaaba35204" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
+                                  { uses = "cachix/install-nix-action@v17" ; "${ constants._with }" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
                                   { run = "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" ; }
                                 ] ;
                             } ;
@@ -83,7 +117,34 @@
                     } ;
                 } ;
             } ;
-            sed = import ./sed.nix pkgs dollar ;
+            sed =
+	      pkgs.writeShellScript
+                "sed"
+                ''
+                  ${ pkgs.gnused }/bin/sed \
+                  -e "s#${ constants.on }#on#" \
+                  -e "s#${ constants.push }##" \
+                  -e "s#${ constants._with }#with#" \
+                  -e "w${ dollar "1" }"
+                 '' ;
+	    write-happy-test =
+	      pkgs.writeShellScriptBin
+	      "write-happy-test"
+	      ''
+	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
+	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.jq } --yaml-output '${ builtins.toJSON jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
+		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
+		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
+	      '' ;
+	    write-happy-tester =
+	      pkgs.writeShellScriptBin
+	      "write-happy-tester"
+	      ''
+	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
+	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.jq } --yaml-output '${ builtins.toJSON jq.happy.tester }' | ${ sed } ${ dollar "TEMP" } &&
+		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
+		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
+	      '' ;
             write-init-test =
               pkgs.writeShellScriptBin
                 "write-init-test"
@@ -168,7 +229,23 @@
               pkgs.mktemp
               pkgs.yq
               pkgs.moreutils
+	      (
+	        pkgs.writeShellScriptBin
+		  "write-jq"
+		  ''
+		    TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
+		    ${ pkgs.coreutils }/bin/echo &&
+		    ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml &&
+		    ${ pkgs.coreutils }/bin/echo &&
+		    ${ pkgs.coreutils }/bin/echo '${ jq.happy.test }' &&
+		    ${ pkgs.coreutils }/bin/echo &&
+		    ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
+		    ${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
+		  ''
+	      )
 	      execute-init-tester
+	      write-happy-test
+	      write-happy-tester
               write-init-test
 	      write-init-tester
               (
