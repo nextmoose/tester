@@ -155,6 +155,7 @@
 		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+		${ pkgs.coreutils }/bin/git add .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
 	      '' ;
 	    write-happy-tester =
@@ -166,6 +167,7 @@
 		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
+		${ pkgs.coreutils }/bin/git add .github/workflows/test.yaml &&
 		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
 	      '' ;
             write-init-test =
@@ -315,6 +317,7 @@
           export TRY_HOME=/home/emory/projects/0gG3HgHu &&
           export UTILS_HOME=/home/emory/projects/MGWfXwul &&
           export VISIT_HOME=/home/emory/projects/wHpYNJk8 &&
+	  echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
           ${ pkgs.coreutils }/bin/echo STRUCTURE FLAKE DEVELOPMENT ENVIRONMENT
         '' ;
     }
