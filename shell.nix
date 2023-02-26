@@ -14,6 +14,17 @@
 	      check = "0898c9f0-741d-4702-bf35-464e239e3320" ;
 	    } ;
           dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
+	  find =
+	    pkgs.writeShellScriptBin
+	    "find"
+	    ''
+	      if ${ pkgs.gnugrep }/bin/grep "${ "@" }"
+	      then
+	        ${ pkgs.coreutils }/bin/echo YES
+	      else
+	        ${ pkgs.coreutils }/bin/echo
+	      fi
+	    '' ;
 	  execute-init-tester =
 	    pkgs.writeShellScriptBin
 	      "execute-init-tester"
@@ -32,8 +43,9 @@
 		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
 		  ${ pkgs.git }/bin/git fetch origin main &&
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing test" &&
+		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Initializing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
+		  ${ pkgs.git }/bin/git clean -nd &&
 		  LINE_1=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
 		  if [[ ${ dollar "LINE_1" } =~ ${ dollar "TARGET" } ]]
@@ -44,11 +56,11 @@
 		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
 		    while ! [ -z "${ dollar "LINE" }" ]
 		    do
-		      LINE=$( ${ pkgs.gh }/bin/gh pr list | grep "^${ dollar "MATCH" }.*\$" )
-		      ${ pkgs.coreutils }/bin/echo sleep 1s
+		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find  "^${ dollar "MATCH" }.*\$" ) &&
+		      ${ pkgs.coreutils }/bin/echo sleep 1s > /dev/null 2> /dev/null
 		    done &&
 		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, FINISHED AT ${ dollar "AFTER" }, AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
 		  else
 		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
 		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
@@ -61,23 +73,24 @@
 		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
 		  ${ pkgs.git }/bin/git fetch origin main &&
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing implementation which happens to also be tester" &&
+		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Initializing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
+		  ${ pkgs.git }/bin/git clean -nd &&
 		  LINE_2=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
 		  if [[ ${ dollar "LINE_2" } =~ ${ dollar "TARGET" } ]]
 		  then
-		    LINE=${ dollar "LINE_1" } &&
+		    LINE=${ dollar "LINE_2" } &&
 		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
 		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
 		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
 		    while ! [ -z "${ dollar "LINE" }" ]
 		    do
-		      LINE=$( ${ pkgs.gh }/bin/gh pr list | grep "^${ dollar "MATCH" }.*\$" )
-		      ${ pkgs.coreutils }/bin/echo sleep 1s
+		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find "^${ dollar "MATCH" }.*\$" ) &&
+		      ${ pkgs.coreutils }/bin/echo sleep 1s > /dev/null 2> /dev/null
 		    done &&
 		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, FINISHED AT ${ dollar "AFTER" }, AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
 		  else
 		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
 		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
@@ -90,13 +103,28 @@
 		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
 		  ${ pkgs.git }/bin/git fetch origin main &&
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --allow-empty --message "Re-establishing test" &&
+		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Re-establishing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
+		  ${ pkgs.git }/bin/git clean -nd &&
+		  LINE_3=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
+		  if [[ ${ dollar "LINE_3" } =~ ${ dollar "TARGET" } ]]
+		  then
+		    LINE=${ dollar "LINE_3" } &&
+		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
+		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
+		    while ! [ -z "${ dollar "LINE" }" ]
+		    do
+		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find "^${ dollar "MATCH" }.*\$" ) &&
+		      ${ pkgs.coreutils }/bin/echo sleep 1s
+		    done &&
+		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		  else
+		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
+		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
+		  fi &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 2 &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
@@ -105,13 +133,27 @@
 		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
 		  ${ pkgs.git }/bin/git fetch origin main &&
 		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --allow-empty --message "Reestablishing implementation which happens to also be tester" &&
+		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Reestablishing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ if auto-merge then "${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch" else "${ pkgs.coreutils }/bin/echo auto-merge is false" } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
-		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  # ${ pkgs.gh }/bin/gh pr status &&
+		  ${ pkgs.git }/bin/git clean -nd &&
+		  LINE_4=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
+		  if [[ ${ dollar "LINE_4" } =~ ${ dollar "TARGET" } ]]
+		  then
+		    LINE=${ dollar "LINE_4" } &&
+		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
+		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
+		    while ! [ -z "${ dollar "LINE" }" ]
+		    do
+		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find "^${ dollar "MATCH" }.*\$" ) &&
+		      ${ pkgs.coreutils }/bin/echo sleep 1s
+		    done &&
+		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		  else
+		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
+		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
+		  fi &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
 	      '' ;
           jq =
