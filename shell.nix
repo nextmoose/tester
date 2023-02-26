@@ -32,6 +32,9 @@
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
@@ -43,8 +46,12 @@
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  cd ${ dollar "LOCAL_TEST" } &&
+		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
 		  ${ write-happy-test }/bin/write-happy-test &&
 		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
 		  ${ pkgs.git }/bin/git fetch origin main &&
@@ -53,6 +60,9 @@
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
@@ -64,6 +74,9 @@
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
 		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  ${ pkgs.gh }/bin/gh pr status &&
+		  ${ pkgs.coreutils }/bin/sleep 2m &&
+		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
 	      '' ;
           jq =
