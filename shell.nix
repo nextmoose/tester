@@ -32,7 +32,7 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  # ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
@@ -46,7 +46,7 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Initializing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  # ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
@@ -60,7 +60,7 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Re-establishing test" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  # ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
@@ -74,7 +74,7 @@
 		  ${ pkgs.git }/bin/git commit --allow-empty --message "Reestablishing implementation which happens to also be tester" &&
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.gh }/bin/gh pr create --base main --fill &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
+		  # ${ pkgs.gh }/bin/gh pr merge --auto --rebase &&
 		  ${ pkgs.gh }/bin/gh pr status &&
 		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
 		  ${ pkgs.gh }/bin/gh pr status &&
