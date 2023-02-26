@@ -36,6 +36,7 @@
 		  LOCAL_TEST=${ dollar 5 } &&
 		  LOCAL_TESTER=${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  TARGET=^https://github.com/.*/.*/pull/\([0-9]*\)\$ &&
+		  ${ pkgs.coreutils }/bin/echo &&
 		  ${ pkgs.coreutils }/bin/echo TEST PHASE 1 &&
 		  cd ${ dollar "LOCAL_TEST" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
@@ -66,6 +67,7 @@
 		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
 		  fi &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  ${ pkgs.coreutils }/bin/echo &&
 		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 1 &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
@@ -96,6 +98,7 @@
 		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
 		  fi &&
 		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  ${ pkgs.coreutils }/bin/echo &&
 		  ${ pkgs.coreutils }/bin/echo TEST PHASE 2 &&
 		  cd ${ dollar "LOCAL_TEST" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
@@ -120,12 +123,13 @@
 		      ${ pkgs.coreutils }/bin/echo sleep 1s
 		    done &&
 		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, ENDED AT ${ dollar "AFTER" } AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
 		  else
 		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
 		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
 		  fi &&
 		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
+		  ${ pkgs.coreutils }/bin/echo &&
 		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 2 &&
 		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
 		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
@@ -149,7 +153,7 @@
 		      ${ pkgs.coreutils }/bin/echo sleep 1s
 		    done &&
 		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
+		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, ENDED AT ${ "AFTER" }, AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
 		  else
 		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
 		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
