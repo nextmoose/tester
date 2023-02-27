@@ -3,7 +3,7 @@
     {
       buildInputs =
         let
-	  sleep = "4m" ;
+	  sleep = "16m" ;
 	  auto-merge = true ;
 	  constants =
 	    {
@@ -144,6 +144,7 @@
 		  ${ pkgs.git }/bin/git push origin HEAD &&
 		  ${ pkgs.git }/bin/git clean -nd &&
 		  LINE_4=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
+		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
 		  if [[ ${ dollar "LINE_4" } =~ ${ dollar "TARGET" } ]]
 		  then
 		    LINE=${ dollar "LINE_4" } &&
