@@ -3,7 +3,7 @@
     {
       buildInputs =
         let
-	  sleep = "3m" ;
+	  sleep = "4m" ;
 	  auto-merge = true ;
 	  constants =
 	    {
@@ -167,8 +167,8 @@
             {
 	      happy =
 	        {
-		  test = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } ,  { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg test-home true --command check" } ] } } ) }'' ;
-		  tester = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } ,  { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" } ] } } ) }'' ;
+		  test = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } ,  { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg test-home true --command check" } ] } } ) }'' ;
+		  tester = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } ,  { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" } ] } } ) }'' ;
 		} ;
               init =
                 {
