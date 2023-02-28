@@ -3,326 +3,43 @@
     {
       buildInputs =
         let
-	  sleep = "16m" ;
-	  auto-merge = true ;
-	  constants =
-	    {
-	      on = "6ef4ab1f-e39a-4184-a7b1-03ef39c05786" ;
-	      push = "7f685616-ce05-4275-8630-a9bcc8d7cd09" ;
-	      _with = "921d70d5-1dbe-4427-99dd-e4138d4b17fe" ;
-	      jobs = "93e9beb9-c316-4c18-bcf7-b9e42a573b9f" ;
-	      check = "0898c9f0-741d-4702-bf35-464e239e3320" ;
-	    } ;
           dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
-	  find =
-	    pkgs.writeShellScriptBin
-	    "find"
-	    ''
-	      if ${ pkgs.gnugrep }/bin/grep "${ "@" }"
-	      then
-	        ${ pkgs.coreutils }/bin/echo YES
-	      else
-	        ${ pkgs.coreutils }/bin/echo
-	      fi
-	    '' ;
-	  execute-init-tester =
-	    pkgs.writeShellScriptBin
-	      "execute-init-tester"
-	      ''
-                  IMPLEMENTATION=${ dollar 1 } &&
-                  TEST=${ dollar 2 } &&
-                  TESTER=${ dollar 3 } &&
-		  LOCAL_IMPLEMENTATION=${ dollar 4 } &&
-		  LOCAL_TEST=${ dollar 5 } &&
-		  LOCAL_TESTER=${ dollar "LOCAL_IMPLEMENTATION" } &&
-		  TARGET=^https://github.com/.*/.*/pull/\([0-9]*\)\$ &&
-		  ${ pkgs.coreutils }/bin/echo &&
-		  ${ pkgs.coreutils }/bin/echo TEST PHASE 1 &&
-		  cd ${ dollar "LOCAL_TEST" } &&
-		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
-		  ${ write-init-test }/bin/write-init-test ${ dollar "IMPLEMENTATION" } ${ dollar "TEST" } ${ dollar "TESTER" } &&
-		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-		  ${ pkgs.git }/bin/git fetch origin main &&
-		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Initializing test" &&
-		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.git }/bin/git clean -nd &&
-		  LINE_1=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
-		  if [[ ${ dollar "LINE_1" } =~ ${ dollar "TARGET" } ]]
-		  then
-		    LINE=${ dollar "LINE_1" } &&
-		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
-		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
-		    while ! [ -z "${ dollar "LINE" }" ]
-		    do
-		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find  "^${ dollar "MATCH" }.*\$" ) &&
-		      ${ pkgs.coreutils }/bin/echo sleep 1s > /dev/null 2> /dev/null
-		    done &&
-		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, FINISHED AT ${ dollar "AFTER" }, AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
-		  else
-		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
-		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
-		  fi &&
-		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
-		  ${ pkgs.coreutils }/bin/echo &&
-		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 1 &&
-		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
-		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
-		  ${ write-init-tester }/bin/write-init-tester ${ dollar "IMPLEMENTATION" } ${ dollar "TEST" } ${ dollar "TESTER" } &&
-		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-		  ${ pkgs.git }/bin/git fetch origin main &&
-		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Initializing implementation which happens to also be tester" &&
-		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.git }/bin/git clean -nd &&
-		  LINE_2=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
-		  if [[ ${ dollar "LINE_2" } =~ ${ dollar "TARGET" } ]]
-		  then
-		    LINE=${ dollar "LINE_2" } &&
-		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
-		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
-		    while ! [ -z "${ dollar "LINE" }" ]
-		    do
-		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find "^${ dollar "MATCH" }.*\$" ) &&
-		      ${ pkgs.coreutils }/bin/echo sleep 1s > /dev/null 2> /dev/null
-		    done &&
-		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, FINISHED AT ${ dollar "AFTER" }, AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
-		  else
-		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
-		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
-		  fi &&
-		  ${ pkgs.coreutils }/bin/echo Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
-		  ${ pkgs.coreutils }/bin/echo &&
-		  ${ pkgs.coreutils }/bin/echo TEST PHASE 2 &&
-		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  cd ${ dollar "LOCAL_TEST" } &&
-		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
-		  ${ write-happy-test }/bin/write-happy-test &&
-		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-		  ${ pkgs.git }/bin/git fetch origin main &&
-		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Re-establishing test" &&
-		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.git }/bin/git clean -nd &&
-		  LINE_3=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
-		  if [[ ${ dollar "LINE_3" } =~ ${ dollar "TARGET" } ]]
-		  then
-		    LINE=${ dollar "LINE_3" } &&
-		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
-		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
-		    while ! [ -z "${ dollar "LINE" }" ]
-		    do
-		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find "^${ dollar "MATCH" }.*\$" ) &&
-		      ${ pkgs.coreutils }/bin/echo sleep 1s
-		    done &&
-		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, ENDED AT ${ dollar "AFTER" } AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
-		  else
-		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
-		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
-		  fi &&
-		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com &&
-		  ${ pkgs.coreutils }/bin/echo &&
-		  ${ pkgs.coreutils }/bin/echo IMPLEMENTATION PHASE 2 &&
-		  ${ pkgs.coreutils }/bin/sleep ${ sleep } &&
-		  cd ${ dollar "LOCAL_IMPLEMENTATION" } &&
-		  ${ pkgs.coreutils }/bin/echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
-		  ${ write-happy-tester }/bin/write-happy-tester &&
-		  ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-		  ${ pkgs.git }/bin/git fetch origin main &&
-		  ${ pkgs.git }/bin/git reset --soft origin/main &&
-		  ${ pkgs.git }/bin/git commit --all --allow-empty --message "Reestablishing implementation which happens to also be tester" &&
-		  ${ pkgs.git }/bin/git push origin HEAD &&
-		  ${ pkgs.git }/bin/git clean -nd &&
-		  LINE_4=$( ${ pkgs.gh }/bin/gh pr create --base main --fill | ${ pkgs.coreutils }/bin/tail --lines 1 ) &&
-		  ${ pkgs.gh }/bin/gh pr merge --auto --rebase --delete-branch &&
-		  if [[ ${ dollar "LINE_4" } =~ ${ dollar "TARGET" } ]]
-		  then
-		    LINE=${ dollar "LINE_4" } &&
-		    MATCH=${ dollar "BASH_REMATCH[1]" } &&
-		    BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo THERE WAS NO PROBLEM WITH ${ dollar "MATCH" } &&
-		    while ! [ -z "${ dollar "LINE" }" ]
-		    do
-		      LINE=$( ${ pkgs.gh }/bin/gh pr list | ${ find }/bin/find "^${ dollar "MATCH" }.*\$" ) &&
-		      ${ pkgs.coreutils }/bin/echo sleep 1s
-		    done &&
-		    AFTER=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-		    ${ pkgs.coreutils }/bin/echo MERGING STARTED AT ${ dollar "BEFORE" }, ENDED AT ${ dollar "AFTER" }, AND TOOK $(( ${ dollar "AFTER" } - ${ dollar "BEFORE" } )) seconds
-		  else
-		    ${ pkgs.coreutils }/bin/echo THERE WAS AN UNEXPECTED SNAFU &&
-		    ${ pkgs.coreutils }/bin/sleep ${ sleep }
-		  fi &&
-		  ${ pkgs.coreutils }/bin/echo  Y | ${ pkgs.gh }/bin/gh auth logout --hostname github.com
-	      '' ;
-          jq =
-            {
-	      happy =
-	        {
-		  test = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } ,  { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg test-home true --command check" } ] } } ) }'' ;
-		  tester = ''del(.true) + { "${ constants.on }" : { push : "${ constants.push }" } , jobs : ( .jobs + { "pre-check" : { "runs-on" : "ubuntu-latest" , steps : [ { uses : "actions/checkout@v3" } , { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --command check" } ] } , check : { "runs-on" : "ubuntu-latest" , needs : [ "pre-check" ] , steps : [ { uses : "actions/checkout@v3" } ,  { uses : "cachix/install-nix-action@v17" , with : { extra_nix_config : "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" } } , { run : "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" } ] } } ) }'' ;
-		} ;
-              init =
-                {
-                  test =
-                    {
-                      name = "test" ;
-                      "${ constants.on }" =
-                        {
-                          push = constants.push ;
-                        } ;
-                      jobs =
-                        {
-                          check = { runs-on = "ubuntu-latest" ; steps = [ { run = true ; } ] ; } ;
-                        } ;
-                    } ;
-                  tester =
-                    {
-                      name = "test" ;
-                      "${ constants.on }" =
-                        {
-                          push = constants.push ;
-                        } ;
-                      jobs =
-                        {
-                          check =
-                            {
-                              runs-on = "ubuntu-latest" ;
-                              steps =
-                                [
-                                  { uses = "actions/checkout@v3" ; }
-                                  { uses = "cachix/install-nix-action@v17" ; "${ constants._with }" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ secrets.TOKEN }" }" ; } ; }
-                                  { run = "nix-shell .github/workflows/check/shell.nix --arg implementation-home true --arg tester-home true --command check" ; }
-                                ] ;
-                            } ;
-                        } ;
-                    } ;
-                  init-to-main =
-                    {
-                      test =
-                        {
-                          
-                        } ;
-                    } ;
-                } ;
-            } ;
-            sed =
-	      pkgs.writeShellScript
-                "sed"
-                ''
-                  ${ pkgs.gnused }/bin/sed \
-                  -e "s#${ constants.on }#on#" \
-                  -e "s#${ constants.push }##" \
-                  -e "s#${ constants._with }#with#" \
-                  -e "w${ dollar "1" }"
-                 '' ;
-	    write-happy-test =
-	      pkgs.writeShellScriptBin
-	      "write-happy-test"
-	      ''
-	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
-		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-		${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
-	      '' ;
-	    write-happy-tester =
-	      pkgs.writeShellScriptBin
-	      "write-happy-tester"
-	      ''
-	        TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-	        ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ jq.happy.tester }' | ${ sed } ${ dollar "TEMP" } &&
-		${ pkgs.coreutils }/bin/chmod 0600 .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/cat ${ dollar "TEMP" } > .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-		${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-		${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
-	      '' ;
-            write-init-test =
-              pkgs.writeShellScriptBin
-                "write-init-test"
-                ''
-                  ${ pkgs.git }/bin/git checkout -b init/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-                  ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
-                  ${ pkgs.git }/bin/git fetch origin main &&
-                  ${ pkgs.git }/bin/git rebase origin/main &&             
-                  IMPLEMENTATION=${ dollar 1 } &&
-                  TEST=${ dollar 2 } &&
-                  TESTER=${ dollar 3 } &&
-                  if ${ pkgs.git }/bin/git rm -r .github
-                  then
-                    ${ pkgs.coreutils }/bin/rm --recursive --force .github
-                  else
-                    ${ pkgs.coreutils }/bin/rm --recursive --force .github
-                  fi &&
-                  ${ pkgs.coreutils }/bin/mkdir .github &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
-                  ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON jq.init.test }' | ${ sed } .github/workflows/test.yaml &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-                  ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-                  ${ pkgs.gnused }/bin/sed \
-                    -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
-                    -e "s#    test-base ,#    test-base ? \"${ dollar "TEST" }\" ,#" \
-                    -e "s#    tester-base ,#    tester-base ? \"${ dollar "TESTER" }\" ,#" \
-                    -e "w.github/workflows/check/shell.nix" \
-                    ${ ./workflows/check/shell.nix } &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
-                  ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
-                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
-                  ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-                  ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
-                '' ;
-	    write-init-tester =
-              pkgs.writeShellScriptBin
-                "write-init-tester"
-                ''
-                  ${ pkgs.git }/bin/git checkout -b init/$( ${ pkgs.util-linux }/bin/uuidgen ) &&
-                  ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --all --message "" &&
-                  ${ pkgs.git }/bin/git fetch origin main &&
-                  ${ pkgs.git }/bin/git rebase origin/main &&             
-                  IMPLEMENTATION=${ dollar 1 } &&
-                  TEST=${ dollar 2 } &&
-                  TESTER=${ dollar 3 } &&
-                  if ${ pkgs.git }/bin/git rm -r .github
-                  then
-                    ${ pkgs.coreutils }/bin/rm --recursive --force .github
-                  else
-                    ${ pkgs.coreutils }/bin/rm --recursive --force .github
-                  fi &&
-                  ${ pkgs.coreutils }/bin/mkdir .github &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows &&
-                  ${ pkgs.yq }/bin/yq -n --yaml-output '${ builtins.toJSON jq.init.tester }' | ${ sed } .github/workflows/test.yaml &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-                  ${ pkgs.git }/bin/git add .github/workflows/test.yaml &&
-                  ${ pkgs.coreutils }/bin/mkdir .github/workflows/check &&
-                  ${ pkgs.gnused }/bin/sed \
-                    -e "s#^    implementation-base ,\$#    implementation-base ? \"${ dollar "IMPLEMENTATION" }\" ,#" \
-                    -e "s#^    test-base ,\$#    test-base ? \"${ dollar "TEST" }\" ,#" \
-                    -e "s#^    tester-base ,\$#    tester-base ? \"${ dollar "TESTER" }\" ,#" \
-                    -e "w.github/workflows/check/shell.nix" \
-                    ${ ./workflows/check/shell.nix } &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/shell.nix &&
-                  ${ pkgs.git }/bin/git add .github/workflows/check/shell.nix &&
-                  ${ pkgs.coreutils }/bin/cat ${ ./workflows/check/flake.nix } > .github/workflows/check/flake.nix &&
-                  ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/check/flake.nix &&
-                  ${ pkgs.git }/bin/git add .github/workflows/check/flake.nix &&
-                  ${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message --message ""
-                '' ;
+	  yq =
+	    expressions :
+	      let
+	        constants = inner-constants // outer-constants ;
+	        inner-constants =
+		  {
+		    delete = "67fe9630-a4ae-4a39-9dbf-a790a5575f1b" ;
+		    period = "6ff1b0c2-75bf-46cc-b0e9-7e75d687f8e4" ;
+		  } ;
+	        outer-constants =
+		  {
+		    on = "df5d8dd4-a49f-4c1f-b6e6-9ca45ee30494" ;
+		    push = "9ab16531-3d37-4c87-b293-cfc55370a934" ;
+		  } ;
+		worder = expression : expression constants ;
+		enquote = expression : builtins.concatStringsSep "" [ "\"" ( builtins.toString expression ) "\"" ] ;
+		decoder = builtins.replaceStrings [ ( enquote inner-constants.delete ) ( enquote inner-constants.period ) ] [ "del(.true)" "." ] ;
+		phrase = builtins.concatStringsSep " + " ( builtins.map decoder ( builtins.map builtins.toJSON ( builtins.map worder expressions ) ) ) ;
+	        program =
+		  pkgs.writeShellScript
+		    "yq"
+		    ''
+		      ${ pkgs.coreutils }/bin/echo '${ phrase }' &&
+		      ${ pkgs.coreutils }/bin/tee | ${ pkgs.yq }/bin/yq --yaml-output '${ phrase }' | ${ pkgs.gnused }/bin/sed -e "s#${ outer-constants.on }#on#" -e "s#${ outer-constants.push }##"
+		    '' ;
+		in program ;
           in
             [
+	      (
+	        pkgs.writeShellScriptBin
+		  "mine"
+		  ''
+		    ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ yq [ ( constants : constants.delete ) ( constants : { name = "feed" ; "${ constants.on }" = { push = constants.push ; } ; } ) ] }
+		  ''
+	      )
+	      pkgs.cowsay
               pkgs.chromium
               pkgs.coreutils
               pkgs.emacs
@@ -333,25 +50,6 @@
               pkgs.mktemp
               pkgs.yq
               pkgs.moreutils
-	      (
-	        pkgs.writeShellScriptBin
-		  "write-jq"
-		  ''
-		    TEMP=$( ${ pkgs.mktemp }/bin/mktemp ) &&
-		    ${ pkgs.coreutils }/bin/echo &&
-		    ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml &&
-		    ${ pkgs.coreutils }/bin/echo &&
-		    ${ pkgs.coreutils }/bin/echo '${ jq.happy.test }' &&
-		    ${ pkgs.coreutils }/bin/echo &&
-		    ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ pkgs.yq }/bin/yq --yaml-output '${ jq.happy.test }' | ${ sed } ${ dollar "TEMP" } &&
-		    ${ pkgs.coreutils }/bin/rm ${ dollar "TEMP" }
-		  ''
-	      )
-	      execute-init-tester
-	      write-happy-test
-	      write-happy-tester
-              write-init-test
-	      write-init-tester
               (
                 pkgs.writeShellScriptBin
                   "manual-check-test"
@@ -396,7 +94,7 @@
           export TRY_HOME=/home/emory/projects/0gG3HgHu &&
           export UTILS_HOME=/home/emory/projects/MGWfXwul &&
           export VISIT_HOME=/home/emory/projects/wHpYNJk8 &&
-	  echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
+          echo ${ token } | ${ pkgs.gh }/bin/gh auth login --with-token &&
           ${ pkgs.coreutils }/bin/echo STRUCTURE FLAKE DEVELOPMENT ENVIRONMENT
         '' ;
     }
