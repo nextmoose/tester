@@ -4,8 +4,22 @@
       buildInputs =
         let
           dollar = expression : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString expression ) "}" ] ;
+	  objects =
+	    let
+	      base =
+	        constants :
+		  {
+		    name = "test" ;
+		    "${ constants.on }" =
+		      {
+		        push = constants.push ;
+		      } ;
+		  } ;
+	      in
+	        {
+	        } ;
 	  yq =
-	    expressions :
+	    root : expressions :
 	      let
 	        constants = inner-constants // outer-constants ;
 	        inner-constants =
@@ -26,8 +40,7 @@
 		  pkgs.writeShellScript
 		    "yq"
 		    ''
-		      ${ pkgs.coreutils }/bin/echo '${ phrase }' &&
-		      ${ pkgs.coreutils }/bin/tee | ${ pkgs.yq }/bin/yq --yaml-output '${ phrase }' | ${ pkgs.gnused }/bin/sed -e "s#${ outer-constants.on }#on#" -e "s#${ outer-constants.push }##"
+		      ${ if root then "" else "${ pkgs.coreutils }/bin/tee |" } ${ pkgs.yq }/bin/yq ${ if root then "-n" else "" } --yaml-output '${ phrase }' | ${ pkgs.gnused }/bin/sed -e "s#${ outer-constants.on }#on#" -e "s#${ outer-constants.push }##"
 		    '' ;
 		in program ;
           in
@@ -36,7 +49,7 @@
 	        pkgs.writeShellScriptBin
 		  "mine"
 		  ''
-		    ${ pkgs.coreutils }/bin/cat .github/workflows/test.yaml | ${ yq [ ( constants : constants.delete ) ( constants : { name = "feed" ; "${ constants.on }" = { push = constants.push ; } ; } ) ] }
+		    ${ yq true [ ( constants : constants.delete ) ( constants : { name = "feed" ; "${ constants.on }" = { push = constants.push ; } ; } ) ] }
 		  ''
 	      )
 	      pkgs.cowsay
