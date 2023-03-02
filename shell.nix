@@ -37,7 +37,7 @@
 			  steps =
 			    [
 			      { uses = "actions/checkout@v3" ; }
-			      { uses = "cachix/install-nix-action@v18" ; "${ constants._with }" = { extra_nix_config = "access-tokens = github.com = ${ "{ github.TOKEN }" }" } ; }
+			      { uses = "cachix/install-nix-action@v18" ; "${ constants._with }" = { extra_nix_config = "access-tokens = github.com = ${ dollar "{ github.TOKEN }" }" ; } ; }
 			      {
 			        uses = "workflow/nix-shell-action@v3" ;
 				"${ constants._with }" =
@@ -67,9 +67,7 @@
 		    then
 		      ${ pkgs.coreutils }/bin/mkdir .github/workflows
 		    fi &&
-                    ${ pkgs.yq }/bin/yq -n --yaml-output '${ objects.init }' | ${ sed } > .github/workflows/test.yaml &&
-		    ${ pkgs.coreutils }/bin/chmod 0400 .github/workflows/test.yaml &&
-		    ${ pkgs.git }/bin/git add .github/workflows/test.yaml
+		    ${ pkgs.coreutils }/bin/true
                   ''
               )
               (
@@ -82,6 +80,7 @@
               pkgs.cowsay
               pkgs.chromium
               pkgs.coreutils
+	      pkgs.docker
               pkgs.emacs
               pkgs.gh
               pkgs.github-runner
