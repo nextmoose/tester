@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: nextmoose/tester@8f19ae09dfda5e9c20f5ff724d9d7567f2408d7f
         with:
-          defect: true
+          defect: $FOOBAR_A
