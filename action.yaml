@@ -33,5 +33,5 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: ${{ github.action_path }}/check.sh "${{ defect }}"11111111111
+    - run: ${{ github.action_path }}/check.sh "${{ defect }}"
       shell: bash
