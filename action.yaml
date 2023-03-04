@@ -30,4 +30,7 @@ inputs:
     required: false
     description: The Github token to be used so that we do not error due to rate-limiting.  This is useful for fetching items which is necessary for installation.
 runs:
-  run: "echo HELLO WORLD"
+  using: composite
+  steps:
+    - run: "echo HELLO WORLD"
+      shell: bash
