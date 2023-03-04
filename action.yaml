@@ -34,7 +34,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: ${{ github.action_path }}/install-nix.sh && ${{ github.action_path }}/check.sh
+    - run: ${{ github.action_path }}/check.sh
       shell: bash
       env:
         IMPLEMENTATION_URL: ${{ inputs.implementation-url }}
@@ -46,3 +46,4 @@ runs:
         POSTULATE: ${{ inputs.postulate }}
         INPUT_EXTRA_NIX_CONFIG: access-tokens = github.com = ${{ inputs.token }}
         INPUT_GITHUB_ACCESS_TOKEN: ${{ inputs.token }}
+	ACTION_PATH: ${{ github.action_path }}
