@@ -12,7 +12,7 @@ jobs:
       TEST_REV:
       DEFECT:
       POSTULATE: false
-      TOKEN: dfads
+      TOKEN: ${{ github.TOKEN }}
     steps:
       - uses: nextmoose/tester@5dbd4e9623681f2edacb05b195e9d2c7237af5c3
         with:

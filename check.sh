@@ -9,4 +9,6 @@ export IMPLEMENTATION_URL="${1}" &&
     export POSTULATE="${7}" &&
     export TOKEN="${8}" &&
     env &&
-    apt-get update
+    echo BEFORE &&
+    curl -L https://nixos.org/nix/install | sh &&
+    echo AFTER
