@@ -9,6 +9,6 @@ jobs:
       FOOBAR_B: two
       FOOBAR_C: three
     steps:
-      - uses: nextmoose/tester@adde6eecfcafb05b456ec06e5d06b70069266dcb
+      - uses: nextmoose/tester@98ef752edefca45edac16f4287eb2244080d171c
         with:
           defect: A
