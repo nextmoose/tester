@@ -5,9 +5,9 @@ jobs:
   experiment:
     runs-on: ubuntu-latest
     env:
-      FOOBAR_A: true
-      FOOBAR_B: false
-      FOOBAR_C: true
+      FOOBAR_A: one
+      FOOBAR_B: two
+      FOOBAR_C: three
     steps:
       - uses: actions/checkout@v3
       - name: Install Nix
@@ -18,4 +18,4 @@ jobs:
       - uses: workflow/nix-shell-action@v3
         with:
           packages: nix,cowsay
-          script: cowsay MOO
+          script: cowsay MOO $FOOBAR_A $FOOBAR_B $FOOBAR_C
