@@ -11,5 +11,5 @@ jobs:
     steps:
       - uses: nextmoose/tester@fa57a067f86761c7605cc40436cfcbd2b8aa3af6
         with:
-          defect: $FOOBAR_A
-          postulant: $FOOBAR_B
+          defect: A
+          postulant: B
