@@ -9,4 +9,4 @@ jobs:
       FOOBAR_B: two
       FOOBAR_C: three
     steps:
-      - uses: nextmoose/tester@b33a179424107147da70c94596459ec6ef3939f1
+      - uses: nextmoose/tester@2c6fffbd8efd26ffbeeb5e2001c1dc81db362022
