@@ -3,7 +3,7 @@ description: "Test a nixos implementation"
 author: "Emory Merryman"
 inputs:
   implementation-url:
-    required: false
+    required: true
     description: The github url of the implementation suitable for using in a flake.
   implementation-postulant:
     required: false
@@ -32,5 +32,5 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: "echo HELLO WORLD"
+    - run: echo HI
       shell: bash
