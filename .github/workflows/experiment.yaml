@@ -17,4 +17,10 @@ jobs:
       - uses: nextmoose/tester@5dbd4e9623681f2edacb05b195e9d2c7237af5c3
         with:
 	  implementation-url: $IMPLEMENTATION_URL
-          defect: $FOOBAR_A
+	  implementation-postulate: $IMPLEMENTATION_POSTULATE
+	  test-url: $TEST_URL
+	  test-postulate: $TEST_POSTULATE
+	  test-rev: $TEST_REV
+	  defect: $DEFECT
+	  postulate: $POSTULATE
+          token: $TOKEN
