@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: nextmoose/tester@605cbf7bca327b535d367435025ec08475ad42c5
         with:
-          defect: A
+          defect: true
