@@ -2,12 +2,37 @@ name: "Tester"
 description: "Test a nixos implementation"
 author: "Emory Merryman"
 inputs:
+  implementation-url:
+    required: true
+    description: The url of the implementation as useful in a git flake
+  implementation-postulate:
+    required: true
+    description: Indicates whether to test the implementation being pushed or use the url
+    default: false
+  test-url:
+    required: true
+    description: The url of the test as useful in a git flake
+  test-postulate:
+    required: true
+    description: Indicates whether to use the test being pushed or use the url
+    defalt: false
+  test-rev:
+    required: true
+    description: In the event of a so-called broken test where we are using the non-main branch for testing, indicates the revision of the test to use.
+    default:
   defect:
-    required: false
+    required: true
     description: The expected defect to find.  Since we either expect zero or one defect, this should either be blank or have one item in it.
-    default: YES-DEFAULT
+    default:
+  postulate:
+    required: true
+    description: Indicates we should bypass testing
+    default: true
+  token:
+    required: true
+    description: Useful for bypassing rate limiting
 runs:
   using: composite
   steps:
-    - run: ${{ github.action_path }}/check.sh "${{ inputs.defect }}"
+    - run: ${{ github.action_path }}/check.sh "${{ inputs.implementation-url }}" "${{ inputs.implementation-postulate }}" "${{ inputs.test-url }}" "${{ inputs.test-postulate }}" "${{ inputs.test-rev }}" "${{ inputs.defect }}" ${{ inputs.postulate }}" "${{ inputs.token }}"
       shell: bash
