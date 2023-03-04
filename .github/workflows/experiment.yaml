@@ -18,4 +18,4 @@ jobs:
       - uses: workflow/nix-shell-action@v3
         with:
           packages: nix,cowsay
-          script: cowsay MOO $FOOBAR_A $FOOBAR_B $FOOBAR_C
+          script: cowsay MOO $FOOBAR_A $FOOBAR_B $FOOBAR_C && nix flake init && echo "{ inputs = { flake-utils.url = "github:numtide/flake-utils?rev=5aed5285a952e0b949eb3ba02c12fa4fcfef535f" ; nixpkgs.url = "github:nixos/nixpkgs?rev=57eac89459226f3ec743ffa6bbbc1042f5836843" ; } outputs = flake-utils.lib.eachDefaultSystem ( system let pkgs = builtins.getAttr system nixpkgs.legacyPackages ; in pkgs.mkShell { buildInputs = [ ( pkgs.writeShellScriptBin "foobar" "${ pkgs.coreutils }/bin/env" ) ] ; } ; ) ; }" > flake.nix && nix develop 
