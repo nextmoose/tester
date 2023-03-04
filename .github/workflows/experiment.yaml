@@ -12,7 +12,7 @@ jobs:
       TEST_REV:
       DEFECT:
       POSTULATE: false
-      TOKEN: ${{ github.TOKEN }}
+      TOKEN: ${{ secrets.TOKEN }}
     steps:
       - uses: nextmoose/tester@721263a16515903028ff40a5e47dc4b6582eeb3a
         with:
