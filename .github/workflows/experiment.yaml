@@ -9,7 +9,7 @@ jobs:
       FOOBAR_B: two
       FOOBAR_C: three
     steps:
-      - uses: nextmoose/tester@226062b97c3d6db42349f73830abd6a568f32e96
+      - uses: nextmoose/tester@fa57a067f86761c7605cc40436cfcbd2b8aa3af6
         with:
-          defect: pr_number
-          postulant: pr_number
+          defect: $FOOBAR_A
+          postulant: $FOOBAR_B
