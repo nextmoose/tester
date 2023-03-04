@@ -5,10 +5,16 @@ jobs:
   experiment:
     runs-on: ubuntu-latest
     env:
-      FOOBAR_A: one
-      FOOBAR_B: two
-      FOOBAR_C: three
+      IMPLEMENTATION_URL: github:nextmoose/tester
+      IMPLEMENTATION_POSTULATE: false
+      TEST_URL: github:nextmoose/tester-test
+      TEST_POSTULATE: false
+      TEST_REV:
+      DEFECT:
+      POSTULATE: false
+      TOKEN: ${{ token }}
     steps:
-      - uses: nextmoose/tester@20bcebffaf23f135282706607f0203ac749db31b
+      - uses: nextmoose/tester@5dbd4e9623681f2edacb05b195e9d2c7237af5c3
         with:
+	  implementation-url: $IMPLEMENTATION_URL
           defect: $FOOBAR_A
