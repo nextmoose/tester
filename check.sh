@@ -1,6 +1,6 @@
 #!/bin/sh
 
 echo BEFORE &&
-    sh ./install-nix.sh &&
+    sh ${GITHUB_ACTION_PATH}/install-nix.sh &&
     echo AFTER &&
     env
