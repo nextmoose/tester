@@ -23,7 +23,7 @@ inputs:
   defect:
     required: false
     description: The expected defect to find.  Since we either expect zero or one defect, this should either be blank or have one item in it.
-    
+    default: YES-DEFAULT
   postulant:
     required: false
     description: If true, then disregard everything and pass.
