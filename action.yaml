@@ -38,11 +38,11 @@ runs:
       shell: bash
       env:
         IMPLEMENTATION_URL: ${{ inputs.implementation-url }}
-	IMPLEMENTATION_POSTULATE: ${{ inputs.implementation-postulate }}
-	TEST_URL: ${{ inputs.test-url }}
-	TEST_POSTULATE: ${{ inputs.test-postulate }}
-	TEST_REV: ${{ inputs.test-rev }}
-	DEFECT: ${{ inputs.defect }}
-	POSTULATE: ${{ inputs.postulate }}
-	TOKEN: ${{ input.token }}
-	INPUT_EXTRA_NIX_CONFIG: access-tokens = github.com = ${{ token }}
+        IMPLEMENTATION_POSTULATE: ${{ inputs.implementation-postulate }}
+        TEST_URL: ${{ inputs.test-url }}
+        TEST_POSTULATE: ${{ inputs.test-postulate }}
+        TEST_REV: ${{ inputs.test-rev }}
+        DEFECT: ${{ inputs.defect }}
+        POSTULATE: ${{ inputs.postulate }}
+        TOKEN: ${{ input.token }}
+        INPUT_EXTRA_NIX_CONFIG: access-tokens = github.com = ${{ token }}
