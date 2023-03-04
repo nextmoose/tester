@@ -9,12 +9,4 @@ jobs:
       FOOBAR_B: two
       FOOBAR_C: three
     steps:
-      - uses: nextmoose/tester@391f9b8e4f5e74cc37381418b4bfd9977a8d240d
-        implementation-url: github:nextmoose/tester
-	implementation-postulant: false
-	test-url: github:nextmoose/tester-test
-	test-postulant: false
-	test-rev:
-	defect:
-	postulent: true
-	token:
+      - uses: nextmoose/tester@b7b2e0d54b2a12fe39a3268d2845c46fc908eeaa
