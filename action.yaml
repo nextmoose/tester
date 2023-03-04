@@ -3,31 +3,31 @@ description: "Test a nixos implementation"
 author: "Emory Merryman"
 inputs:
   implementation-url:
-    required: true
+    required: false
     description: The github url of the implementation suitable for using in a flake.
   implementation-postulant:
-    required: true
+    required: false
     description: If true, then this push contains the implementation to be tested and disregard the implementation-url.
     default: false
   test-url:
-    required: true
+    required: false
     description: The github url of the test suitable for using in a flake.
   test-postulant:
-    required: true
+    required: false
     description: If true, then this push contains the test to be used for testing and disrepard the test-url.
     default: false
   test-rev:
-    required: true
+    required: false
     description: If set, then we should test the specific name revision of the test-url (not the main branch).  We should not test the main branch but a specific commit.
   defect:
-    required: true
+    required: false
     description: The expected defect to find.  Since we either expect zero or one defect, this should either be blank or have one item in it.
   postulant:
-    required: true
+    required: false
     description: If true, then disregard everything and pass.
     default: false
   token:
-    required: true
+    required: false
     description: The Github token to be used so that we do not error due to rate-limiting.  This is useful for fetching items which is necessary for installation.
 runs:
   run: "echo HELLO WORLD"
