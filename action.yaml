@@ -48,3 +48,6 @@ runs:
         INPUT_GITHUB_ACCESS_TOKEN: ${{ inputs.token }}
         INPUT_INSTALL_OPTIONS: ${{ inputs.install_options }}
         ACTION_PATH: ${{ github.action_path }}
+        INPUT_INSTALL_URL:
+        INPUT_INSTALL_OPTIONS: 
+        INPUT_NIX_PATH: 
