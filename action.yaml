@@ -44,4 +44,4 @@ runs:
         TEST_REV: ${{ inputs.test-rev }}
         DEFECT: ${{ inputs.defect }}
         POSTULATE: ${{ inputs.postulate }}
-        INPUT_EXTRA_NIX_CONFIG: access-tokens = github.com = ${{ token }}
+        INPUT_EXTRA_NIX_CONFIG: access-tokens = github.com = ${{ inputs.token }}
