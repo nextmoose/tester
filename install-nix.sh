@@ -20,13 +20,7 @@ add_config() {
 # Set jobs to number of cores
 add_config "max-jobs = auto"
 # Allow binary caches for user
-add_config "trusted-users = root ${USER:-}"
-# Add github access token
-if [[ -n "${INPUT_GITHUB_ACCESS_TOKEN:-}" ]]; then
-  add_config "access-tokens = github.com=$INPUT_GITHUB_ACCESS_TOKEN"
-elif [[ -n "${GITHUB_TOKEN:-}" ]]; then
-  add_config "access-tokens = github.com=$GITHUB_TOKEN"
-fi
+add_config "trusted-users = root $USER"
 # Append extra nix configuration if provided
 if [[ $INPUT_EXTRA_NIX_CONFIG != "" ]]; then
   add_config "$INPUT_EXTRA_NIX_CONFIG"
@@ -43,7 +37,7 @@ installer_options=(
 )
 
 # only use the nix-daemon settings if on darwin (which get ignored) or systemd is supported
-if [[ (! $INPUT_INSTALL_OPTIONS =~ "--no-daemon") && ($OSTYPE =~ darwin || -e /run/systemd/system) ]]; then
+if [[ $OSTYPE =~ darwin || -e /run/systemd/system ]]; then
   installer_options+=(
     --daemon
     --daemon-user-count "$(python3 -c 'import multiprocessing as mp; print(mp.cpu_count() * 2)')"
@@ -88,8 +82,7 @@ fi
 
 # Set paths
 echo "/nix/var/nix/profiles/default/bin" >> "$GITHUB_PATH"
-# new path for nix 2.14
-echo "$HOME/.nix-profile/bin" >> "$GITHUB_PATH"
+echo "/nix/var/nix/profiles/per-user/$USER/profile/bin" >> "$GITHUB_PATH"
 
 if [[ $INPUT_NIX_PATH != "" ]]; then
   echo "NIX_PATH=${INPUT_NIX_PATH}" >> "$GITHUB_ENV"
