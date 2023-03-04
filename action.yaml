@@ -34,5 +34,5 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: ${{ github.action_path }}/check.sh "${{ inputs.implementation-url }}" "${{ inputs.implementation-postulate }}" "${{ inputs.test-url }}" "${{ inputs.test-postulate }}" "${{ inputs.test-rev }}" "${{ inputs.defect }}" ${{ inputs.postulate }}" "${{ inputs.token }}"
+    - run: ${{ github.action_path }}/check.sh "${{ inputs.implementation-url }}" "${{ inputs.implementation-postulate }}" "${{ inputs.test-url }}" "${{ inputs.test-postulate }}" "${{ inputs.test-rev }}" "${{ inputs.defect }}" "${{ inputs.postulate }}" "${{ inputs.token }}"
       shell: bash
