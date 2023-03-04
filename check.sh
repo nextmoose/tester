@@ -1,3 +1,6 @@
 #!/bin/sh
 
-echo HELLO WORLD
+
+DEFECT=${1} &&
+    POSTULATE=${2} &&
+    echo ${DEFECT} ${POSTULATE
