@@ -19,7 +19,6 @@ inputs:
   test-rev:
     required: false
     description: If set, then we should test the specific name revision of the test-url (not the main branch).  We should not test the main branch but a specific commit.
-    
   defect:
     required: false
     description: The expected defect to find.  Since we either expect zero or one defect, this should either be blank or have one item in it.
