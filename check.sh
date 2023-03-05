@@ -28,7 +28,6 @@ env &&
     elif [ "${TEST_POSTULATE}" == "false" ]
 	 echo Since TEST_POSTULATE is false we should not use this push as test ... we should use the url.
     else
-    then
 	echo TEST_POSTULATE must be either true or false &&
 	    exit 64
     fi &&
