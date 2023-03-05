@@ -3,6 +3,8 @@
 env &&
     echo &&
     echo &&
+    echo POSTULATE=${POSTULATE} &&
+    echo &&
     if [ "${POSTULATE}" == "true" ]
     then
 	echo Since POSTULATE is true we should bypass testing. &&
