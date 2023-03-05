@@ -1,0 +1,17 @@
+name: "experiment"
+on:
+  push:
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nextmoose/tester@412c7ec1e7a9de9695aba107643dd11dd6db8b53
+        with:
+          implementation-url: github:nextmoose/tester
+          implementation-postulate: false
+          test-url: github:nextmoose/tester-test
+          test-postulate: false
+          test-rev: 
+          defect: 
+          postulate: false
+          token: ${{ secrets.TOKEN }}
