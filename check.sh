@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 env &&
     echo &&
@@ -9,11 +9,11 @@ env &&
     then
 	echo POSTULANT must not be blank &&
 	    exit 64
-    elif [ "${POSTULATE}" == "true" ]
+    elif [ ${POSTULATE} == true ]
     then
 	echo Since POSTULATE is true we should bypass testing. &&
 	    exit 0
-    elif [ "${POSTULATE}" == false ]
+    elif [ ${POSTULATE} == false ]
     then
 	echo Since POSTULATE is false we should not bypass testing ... we should test,
     elif [ "${POSTULATE}" == "false" ]
