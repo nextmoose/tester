@@ -72,11 +72,11 @@ env &&
 	fi
     fi &&
     ${ACTION_PATH}/install-nix.sh &&
+    source ${HOME}/.profile &&
     cd $( mktemp --directory ) &&
     git init &&
     git config user.name "No One" &&
     git config user.email "noone@nobody" &&
-    find ${HOME} -maxdepth 1 -name '.*' &&
     nix flake init &&
     sed -e "s#\${IMPLEMENTATION}#${IMPLEMENTATION}#" -e "s#\${TEST}#${TEST}#" -e "wflake.nix" ${ACTION_PATH}/flake.nix &&    
     git add flake.nix &&
