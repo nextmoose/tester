@@ -72,6 +72,9 @@ env &&
 	fi
     fi &&
     ${ACTION_PATH}/install-nix.sh &&
+    echo BEFORE &&
+    ${ACTION_PATH}/check2.sh &&
+    echo AFTER &&
     find ${HOME} -maxdepth 1 -name '.*' &&
     source ${HOME}/.nix-profile/etc/profile.d/nix.sh
     source ${HOME}/.bashrc &&
