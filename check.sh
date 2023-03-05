@@ -26,6 +26,7 @@ env &&
     then
 	echo Since TEST_POSTULATE is true we should use this push as test disregarding the url.
     elif [ "${TEST_POSTULATE}" == "false" ]
+    then
 	 echo Since TEST_POSTULATE is false we should not use this push as test ... we should use the url.
     else
 	echo TEST_POSTULATE must be either true or false &&
