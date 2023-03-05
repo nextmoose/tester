@@ -14,7 +14,7 @@ jobs:
       POSTULATE: false
       TOKEN: ${{ secrets.TOKEN }}
     steps:
-      - uses: nextmoose/tester@a757cf5cafbfff3449e364e9b21b66012b90835c
+      - uses: nextmoose/tester@c9884d10e20285ce74e42cb2b78a69a130e8c95e
         with:
           implementation-url: $IMPLEMENTATION_URL
           implementation-postulate: $IMPLEMENTATION_POSTULATE
