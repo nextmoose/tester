@@ -7,7 +7,7 @@ env &&
     then
 	echo Since POSTULATE is true we should bypass testing. &&
 	    exit 0
-    elif [ "${POSTULATE}" == "false" ]
+    elif [ "${POSTULATE}" == false ]
     then
 	echo Since POSTULATE is false we should not bypass testing ... we should test,
     else
