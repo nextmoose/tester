@@ -22,5 +22,5 @@ jobs:
           test-postulate: $TEST_POSTULATE
           test-rev: $TEST_REV
           defect: $DEFECT
-          postulate: $POSTULATE
+          postulate: false
           token: $TOKEN
