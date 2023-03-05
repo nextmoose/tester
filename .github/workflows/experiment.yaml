@@ -4,24 +4,14 @@ on:
 jobs:
   experiment:
     runs-on: ubuntu-latest
-    env:
-      IMPLEMENTATION_URL: github:nextmoose/tester
-      IMPLEMENTATION_POSTULATE: false
-      TEST_URL: github:nextmoose/tester-test
-      TEST_POSTULATE: false
-      TEST_REV:
-      DEFECT:
-      POSTULATE: false
-      TOKEN: ${{ secrets.TOKEN }}
-      TEST: 73d0279a-7bd5-4da8-a4f1-f04143698bde
     steps:
       - uses: nextmoose/tester@c9884d10e20285ce74e42cb2b78a69a130e8c95e
         with:
-          implementation-url: $IMPLEMENTATION_URL
-          implementation-postulate: $IMPLEMENTATION_POSTULATE
-          test-url: $TEST_URL
-          test-postulate: $TEST_POSTULATE
-          test-rev: $TEST_REV
-          defect: $DEFECT
-          postulate: "$POSTULATE"
-          token: $TOKEN
+          implementation-url: github:nextmoose/tester
+          implementation-postulate: false
+          test-url: github:nextmoose/tester-test
+          test-postulate: false
+          test-rev: 
+          defect: 
+          postulate: false
+          token: ${{ secrets.TOKEN }}
