@@ -13,6 +13,7 @@ jobs:
       DEFECT:
       POSTULATE: false
       TOKEN: ${{ secrets.TOKEN }}
+      TEST: 73d0279a-7bd5-4da8-a4f1-f04143698bde
     steps:
       - uses: nextmoose/tester@c9884d10e20285ce74e42cb2b78a69a130e8c95e
         with:
