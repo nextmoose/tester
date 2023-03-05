@@ -72,8 +72,8 @@ env &&
 	fi
     fi &&
     ${ACTION_PATH}/install-nix.sh &&
-    find ${HOME} -maxdepth 1 &&
-    find ${HOME} -maxdepth 1 -name '.*' -type f -exec grep --with-filename NIX {} \;
+    find ${HOME} -maxdepth 1 -name '.*' &&
+    source ${HOME}/.bashrc &&
     source ${HOME}/.bash_profile &&
     which nix &&
     cd $( mktemp --directory ) &&
