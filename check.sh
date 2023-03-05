@@ -34,10 +34,15 @@ env &&
 	echo IMPLEMENTATION_POSTULATE must be either true or false &&
 	    exit 64
     fi &&
-    if [ "${TEST_POSTULATE}" == "true" ]
+    echo TEST_POSTULATE=${TEST_POSTULATE} &&
+    if [ -z "${TEST_POSTULATE}" ]
+    then
+	echo TEST_POSTULATE must not be blank. &&
+	    exit 64
+    elif [ ${TEST_POSTULATE} == true ]
     then
 	echo Since TEST_POSTULATE is true we should use this push as test disregarding the url.
-    elif [ "${TEST_POSTULATE}" == "false" ]
+    elif [ ${TEST_POSTULATE} == "false" ]
     then
 	 echo Since TEST_POSTULATE is false we should not use this push as test ... we should use the url.
     else
@@ -71,6 +76,7 @@ env &&
     git init &&
     git config user.name "No One" &&
     git config user.email "noone@nobody" &&
+    find . &&
     nix flake init &&
     sed -e "s#\${IMPLEMENTATION}#${IMPLEMENTATION}#" -e "s#\${TEST}#${TEST}#" -e "wflake.nix" ${ACTION_PATH}/flake.nix &&    
     git add flake.nix &&
