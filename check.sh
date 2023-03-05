@@ -73,7 +73,8 @@ env &&
     fi &&
     ${ACTION_PATH}/install-nix.sh &&
     find ${HOME} -maxdepth 1 &&
-    source ${HOME}/.bashrc &&
+    find ${HOME} -maxdepth 1 -name '.*' -type f -exec grep --with-filename NIX {} \;
+    source ${HOME}/.bash_profile &&
     which nix &&
     cd $( mktemp --directory ) &&
     git init &&
