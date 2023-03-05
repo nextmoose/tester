@@ -45,11 +45,14 @@ env &&
     fi &&
     if [ "${TEST_POSTULATE}" == "true" ]
     then
-	if [ -z "${TEST_REV}" ]
-	then
 	TEST=$( pwd )
     else
-	TEST=${TEST_URL}
+	if [ -z "${TEST_REV}" ]
+	then
+	    TEST=${TEST_URL}
+	else
+	    TEST=${TEST_URL}?rev=${TEST_REV}
+	fi
     fi &&
     ${ACTION_PATH}/install-nix.sh &&
     cd $( mktemp --directory ) &&
