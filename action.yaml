@@ -46,6 +46,7 @@ runs:
         POSTULATE: ${{ inputs.postulate }}
         INPUT_EXTRA_NIX_CONFIG: access-tokens = github.com = ${{ inputs.token }}
         INPUT_GITHUB_ACCESS_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ github.token }}
         ACTION_PATH: ${{ github.action_path }}
         INPUT_INSTALL_URL:
         INPUT_INSTALL_OPTIONS: 
