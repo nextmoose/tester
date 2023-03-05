@@ -4,10 +4,9 @@ env &&
     echo &&
     echo &&
     echo POSTULATE=${POSTULATE} &&
-    echo &&
     if [ -z "${POSTULATE}" ]
     then
-	echo POSTULANT must not be blank &&
+	echo POSTULANT must not be blank. &&
 	    exit 64
     elif [ ${POSTULATE} == true ]
     then
@@ -16,26 +15,19 @@ env &&
     elif [ ${POSTULATE} == false ]
     then
 	echo Since POSTULATE is false we should not bypass testing ... we should test,
-    elif [ "${POSTULATE}" == "false" ]
-    then
-	echo 1
-    elif [ "${POSTULATE}" == false ]
-    then
-	echo 2
-    elif [ ${POSTULATE} == "false" ]
-    then
-	echo 3
-    elif [ ${POSTULATE} == false ]
-    then
-	echo 4
     else
 	echo POSTULATE must be either true or false &&
 	    exit 64
     fi &&
-    if [ "${IMPLEMENTATION_POSTULATE}" == "true" ]
+    echo IMPLEMENTATION_POSTULATE=${IMPLEMENTATION_POSTULATE} &&
+    if [ -z "${IMPLEMENTATION_POSTULATE}" ]
+    then
+	echo IMPLEMENTATION_POSTULANT must not be blank. &&
+	    exit 64
+    elif [ ${IMPLEMENTATION_POSTULATE} == true ]
     then
 	echo Since IMPLEMENTATION_POSTULATE is true we should use this push as test disregarding the url.
-    elif [ "${IMPLEMENTATION_POSTULATE}" == "false" ]
+    elif [ ${IMPLEMENTATION_POSTULATE} == false ]
     then
 	echo Since IMPLEMENTATION_POSTULATE is false we should not use this push as test ... we should use the url.
     else
