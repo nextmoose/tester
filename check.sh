@@ -73,6 +73,7 @@ env &&
     fi &&
     ${ACTION_PATH}/install-nix.sh &&
     find ${HOME} -maxdepth 1 -name '.*' &&
+    source ${HOME}/.nix-profile/etc/profile.d/nix.sh
     source ${HOME}/.bashrc &&
     source ${HOME}/.bash_profile &&
     which nix &&
