@@ -71,14 +71,6 @@ env &&
 	    TEST=${TEST_URL}?rev=${TEST_REV}
 	fi
     fi &&
-    bash ${ACTION_PATH}/install-nix.sh &&
-    echo BEFORE &&
-    bash ${ACTION_PATH}/check2.sh &&
-    echo AFTER &&
-    find ${HOME} -maxdepth 1 -name '.*' &&
-    source ${HOME}/.nix-profile/etc/profile.d/nix.sh
-    source ${HOME}/.bashrc &&
-    source ${HOME}/.bash_profile &&
     which nix &&
     cd $( mktemp --directory ) &&
     git init &&
