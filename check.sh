@@ -5,13 +5,29 @@ env &&
     echo &&
     echo POSTULATE=${POSTULATE} &&
     echo &&
-    if [ "${POSTULATE}" == "true" ]
+    if [ -z "${POSTULATE}" ]
+    then
+	echo POSTULANT must not be blank &&
+	    exit 64
+    elif [ "${POSTULATE}" == "true" ]
     then
 	echo Since POSTULATE is true we should bypass testing. &&
 	    exit 0
     elif [ "${POSTULATE}" == false ]
     then
 	echo Since POSTULATE is false we should not bypass testing ... we should test,
+    elif [ "${POSTULATE}" == "false" ]
+    then
+	echo 1
+    elif [ "${POSTULATE}" == false ]
+    then
+	echo 2
+    elif [ ${POSTULATE} == "false" ]
+    then
+	echo 3
+    elif [ ${POSTULATE} == false ]
+    then
+	echo 4
     else
 	echo POSTULATE must be either true or false &&
 	    exit 64
