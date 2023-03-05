@@ -5,7 +5,7 @@ jobs:
   experiment:
     runs-on: ubuntu-latest
     steps:
-      - uses: nextmoose/tester@706ab4bb169eabe1d4ff474df6ae5d854aa9fdd9
+      - uses: nextmoose/tester@6f95b9a890a6afd785760ad1e65aac2f903e3910
         with:
           implementation-url: github:nextmoose/tester
           implementation-postulate: false
