@@ -73,6 +73,7 @@ env &&
     fi &&
     bash ${ACTION_PATH}/install-nix.sh &&
     echo BEFORE &&
+    which nix-shell &&
     bash ${ACTION_PATH}/check2.sh &&
     echo AFTER &&
     find ${HOME} -maxdepth 1 -name '.*' &&
