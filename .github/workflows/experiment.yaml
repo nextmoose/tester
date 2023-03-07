@@ -13,5 +13,5 @@ jobs:
           test-url: github:nextmoose/tester-test
           test-postulate: false
           test-rev: 
-          test-defect: 
+          test-defect: BAD
           postulate: true
