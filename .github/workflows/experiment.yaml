@@ -6,13 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: cachix/install-nix-action@a4b8aaf5a24260b643f571235829e53e6b3cc920
-      - uses: nextmoose/tester@e063c695f76c65dccc64eaab30e3d193cb8831e3
+      - uses: nextmoose/test-action@9dccd8eb684d4d04ecc4abf6863178972e337f94
         with:
           implementation-url: github:nextmoose/tester
           implementation-postulate: false
           test-url: github:nextmoose/tester-test
           test-postulate: false
           test-rev: 
-          defect: 
+          test-defect: 
           postulate: false
-          token: ${{ secrets.TOKEN }}
