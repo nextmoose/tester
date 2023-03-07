@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: cachix/install-nix-action@a4b8aaf5a24260b643f571235829e53e6b3cc920
-      - uses: nextmoose/test-action@37385b672fdf36cd956cfaf2e9cf4c8aa2d775a9
+      - uses: nextmoose/test-action@a9d79ad142896d0cda0df0d44e821ed4f8004218
         with:
           implementation-url: github:nextmoose/tester
           implementation-postulate: false
