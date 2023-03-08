@@ -1,0 +1,53 @@
+name: "Tester"
+description: "Test a nixos implementation"
+author: "Emory Merryman"
+inputs:
+  implementation-url:
+    required: true
+    description: The url of the implementation as useful in a git flake
+  implementation-postulate:
+    required: true
+    description: Indicates whether to test the implementation being pushed or use the url
+    default: false
+  test-url:
+    required: true
+    description: The url of the test as useful in a git flake
+  test-postulate:
+    required: true
+    description: Indicates whether to use the test being pushed or use the url
+    defalt: false
+  test-rev:
+    required: true
+    description: In the event of a so-called broken test where we are using the non-main branch for testing, indicates the revision of the test to use.
+    default:
+  defect:
+    required: true
+    description: The expected defect to find.  Since we either expect zero or one defect, this should either be blank or have one item in it.
+    default:
+  postulate:
+    required: true
+    description: Indicates we should bypass testing
+    default: true
+  token:
+    required: true
+    description: Useful for bypassing rate limiting
+runs:
+  using: composite
+  steps:
+    - run: ${{ github.action_path }}/check.sh
+      shell: bash
+      env:
+        IMPLEMENTATION_URL: ${{ inputs.implementation-url }}
+        IMPLEMENTATION_POSTULATE: ${{ inputs.implementation-postulate }}
+        TEST_URL: ${{ inputs.test-url }}
+        TEST_POSTULATE: ${{ inputs.test-postulate }}
+        TEST_REV: ${{ inputs.test-rev }}
+        DEFECT: ${{ inputs.defect }}
+        POSTULATE: ${{ inputs.postulate }}
+        INPUT_EXTRA_NIX_CONFIG: access-tokens = github.com = ${{ inputs.token }}
+        INPUT_GITHUB_ACCESS_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ github.token }}
+        ACTION_PATH: ${{ github.action_path }}
+        INPUT_INSTALL_URL:
+        INPUT_INSTALL_OPTIONS: 
+        INPUT_NIX_PATH: 
