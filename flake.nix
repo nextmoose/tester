@@ -36,7 +36,7 @@
                                 in track.reduced tester ;
                           list = track : builtins.concatStringsSep "," track.reduced ;
                           set = track : builtins.concatStringsSep "," ( builtins.attrValues track.reduced ) ;
-                          in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } test '
+                          in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } test ;
 		  }
 	  ) ;
   }
