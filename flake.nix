@@ -18,27 +18,25 @@
 		    lib =
 		      implementation : test :
                         let
-                          check =
-                            let
-                              lambda =
-                                track :
+                          lambda =
+                            track :
+                              let
+                                tester =
+                                  observer : success : value :
                                   let
-                                    tester =
-                                      observer : success : value :
-                                      in
-                                        expected = { success = success ; value = value ; } ;
-                                        observed = builtins.tryEval ( observer implementation ) ;
-                                        to-string =
-                                          let
-                                            int = track : builtins.concatStrings "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
-                                            list = track : builtins.concatStrings "," track.reduced ;
-                                            string = track : builtins.concatStrings "" [ "{" track.reduced "}" ] ;
-                                            undefined = track : builtins.throw "b6e1f9d2-4aee-45c1-83a8-cefd78d3f04b" ;
+                                    expected = { success = success ; value = value ; } ;
+                                    observed = builtins.tryEval ( observer implementation ) ;
+                                    to-string =
+                                      let
+                                        int = track : builtins.concatStrings "" [ "[" ( builtins.toString track.reduced ) "]" ] ;
+                                        list = track : builtins.concatStrings "," track.reduced ;
+                                        string = track : builtins.concatStrings "" [ "{" track.reduced "}" ] ;
+                                        undefined = track : builtins.throw "b6e1f9d2-4aee-45c1-83a8-cefd78d3f04b" ;
                                     in if observed == expected then "" else to-string track.path ;
-                              list = track : builtins.concatStringsSep "," track.reduced ;
-                              set = track : builtins.concatStringsSep "," ( builtins.attrValues track.reduced ) ;
-                              in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } test '
-                          in { devShell = pkgs.mkShell { buildInputs = [ ( pkgs.writeShellScriptBin "check" "${ pkgs.coreutils }/bin/echo ${ check }" ) ] ; } ; }
+                                in track.reduced tester ;
+                          list = track : builtins.concatStringsSep "," track.reduced ;
+                          set = track : builtins.concatStringsSep "," ( builtins.attrValues track.reduced ) ;
+                          in _utils.visit { lambda = lambda ; list = list ; set = set ; undefined = undefined ; } test ;
 		  }
 	  ) ;
   }
