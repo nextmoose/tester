@@ -32,6 +32,7 @@
                                         list = track : builtins.concatStrings "," track.reduced ;
                                         string = track : builtins.concatStrings "" [ "{" track.reduced "}" ] ;
                                         undefined = track : builtins.throw "b6e1f9d2-4aee-45c1-83a8-cefd78d3f04b" ;
+                                        in _utils.visit { int = int ; list = list ; string = string ; undefined = undefined ; } ;
                                     in if observed == expected then "" else to-string track.path ;
                                 in track.reduced tester ;
                           list = track : builtins.concatStringsSep "," track.reduced ;
